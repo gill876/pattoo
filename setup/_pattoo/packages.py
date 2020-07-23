@@ -6,6 +6,7 @@ import sys
 import getpass
 
 from _pattoo import shared
+from pattoo_shared import files
 
 
 def install_missing_pip3(package, pip_dir, verbose=True):
@@ -19,6 +20,9 @@ def install_missing_pip3(package, pip_dir, verbose=True):
         True: if the package could be successfully installed
 
     """
+    # Validate pip directory
+    if not os.path.isdir(pip_dir):
+        shared.log('Pip directory is invalid')
     # Installs to the directory specified as pip_dir if the user is not travis
     username = getpass.getuser()
     if username == 'root':
@@ -30,7 +34,6 @@ def install_missing_pip3(package, pip_dir, verbose=True):
             'python3 -m pip install {0}'.format(package), verbose=verbose)
     else:
         shared.log('Installation user is not "root" or "travis"')
-    return True
 
 
 def install(requirements_dir, installation_directory=None, verbose=True):
@@ -50,6 +53,9 @@ def install(requirements_dir, installation_directory=None, verbose=True):
     if bool(installation_directory) is False:
         installation_directory = '/opt/pattoo-daemon/.python'
 
+    # Create directory if it doesn't exist
+    if os.path.isdir(installation_directory) is False:
+        files.mkdir(installation_directory)
     # Appends pip3 dir to python path
     sys.path.append(installation_directory)
 
@@ -98,4 +104,3 @@ def install(requirements_dir, installation_directory=None, verbose=True):
                 installation_directory), verbose=verbose)
 
     print('pip3 packages successfully installed')
-    return True
