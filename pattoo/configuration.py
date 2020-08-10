@@ -9,7 +9,7 @@ from pattoo_shared.configuration import ServerConfig
 from pattoo_shared.configuration import search
 from pattoo.constants import (
     PATTOO_API_WEB_NAME, PATTOO_API_AGENT_NAME,
-    PATTOO_INGESTERD_NAME)
+    PATTOO_INGESTERD_NAME, PATTOO_API_PORTAL_NAME)
 
 
 class ConfigPattoo(ServerConfig):
