@@ -24,6 +24,9 @@ PATTOO_API_PORTAL_NAME = 'pattoo_api_portal'
 PATTOO_API_PORTAL_PROXY = '{}-gunicorn'.format(
     PATTOO_API_PORTAL_NAME)
 
+FOLDER_WEB_STATIC = 'theme/static'
+FOLDER_WEB_TEMPLATE = 'theme/templates'
+
 ###############################################################################
 # Constants for data ingestion
 ###############################################################################
