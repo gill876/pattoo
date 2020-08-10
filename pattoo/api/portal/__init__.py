@@ -50,6 +50,6 @@ sess.init_app(PATTOO_PORTAL)
 
 # Register Blueprints
 PATTOO_PORTAL.register_blueprint(
-    POST, url_prefix=PATTOO_PORTAL_PREFIX)
+    PANEL, url_prefix=PATTOO_PORTAL_PREFIX)
 PATTOO_PORTAL.register_blueprint(
     STATUS, url_prefix=PATTOO_PORTAL_PREFIX)
