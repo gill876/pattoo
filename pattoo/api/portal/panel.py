@@ -10,6 +10,7 @@ import uuid
 
 # Flask imports
 from flask import Blueprint, request, abort, session, jsonify
+from flask import render_template
 
 # pattoo imports
 from pattoo_shared import log
@@ -35,4 +36,4 @@ def index():
         response (int): Response code
 
     """
-    return "Admin portal", 200
+    return render_template('index.html')
