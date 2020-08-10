@@ -7,8 +7,9 @@ import hashlib
 import uuid
 import datetime
 
-# Define the global URL prefix
+# Import Pattoo resources
 from pattoo_shared.constants import PATTOO_PORTAL_PREFIX
+from pattoo.constants import FOLDER_WEB_STATIC, FOLDER_WEB_TEMPLATE
 from pattoo_shared.configuration import BaseConfig
 from pattoo_shared import files
 
@@ -17,7 +18,12 @@ from pattoo.api.portal.panel import PANEL
 from pattoo.api.portal.status import STATUS
 
 # Setup flask
-PATTOO_PORTAL = Flask(__name__)
+PATTOO_PORTAL = Flask(
+    __name__,
+    static_url_path='{}/static'.format(PATTOO_PORTAL_PREFIX),
+    static_folder=FOLDER_WEB_STATIC,
+    template_folder=FOLDER_WEB_TEMPLATE
+    )
 
 # Add secret key to Flask for cookies
 PATTOO_PORTAL.config['SECRET_KEY'] = hashlib.sha256(
@@ -53,3 +59,25 @@ PATTOO_PORTAL.register_blueprint(
     PANEL, url_prefix=PATTOO_PORTAL_PREFIX)
 PATTOO_PORTAL.register_blueprint(
     STATUS, url_prefix=PATTOO_PORTAL_PREFIX)
+
+# Function to easily find your assests
+PATTOO_PORTAL.jinja_env.globals['static'] = (
+    lambda filename: url_for(
+        'static', filename=filename)
+)
+
+@PATTOO_PORTAL.context_processor
+def inject():
+    """Inject global variables for use by templates.
+
+    Args:
+        None
+
+    Returns:
+        (dict): Dictionary with global variables
+
+    """
+    # Return
+    return dict(
+        url_home=PATTOO_PORTAL_PREFIX,
+        url_static='{}/static'.format(PATTOO_PORTAL_PREFIX))
