@@ -406,3 +406,65 @@ class ConfigIngester(ServerConfig):
             except:
                 result = default
         return result
+
+
+class ConfigPortal(ServerConfig):
+    """Class gathers all configuration information.
+    """
+
+    def __init__(self):
+        """Initialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Instantiate the Config parent
+        ServerConfig.__init__(self)
+
+    def ip_listen_address(self):
+        """Get ip_listen_address.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = PATTOO_API_PORTAL_NAME
+        sub_key = 'ip_listen_address'
+        result = search(
+            key, sub_key, self._server_yaml_configuration, die=False)
+
+        # Default to 0.0.0.0
+        if result is None:
+            result = '0.0.0.0'
+        return result
+
+    def ip_bind_port(self):
+        """Get ip_bind_port.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Initialize key variables
+        key = PATTOO_API_PORTAL_NAME
+        sub_key = 'ip_bind_port'
+
+        # Get result
+        intermediate = search(
+            key, sub_key, self._server_yaml_configuration, die=False)
+        if intermediate is None:
+            result = 20203
+        else:
+            result = int(intermediate)
+        return result
