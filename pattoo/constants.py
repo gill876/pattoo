@@ -20,6 +20,9 @@ PATTOO_API_WEB_PROXY = '{}-gunicorn'.format(
 PATTOO_API_AGENT_NAME = 'pattoo_api_agentd'
 PATTOO_API_AGENT_PROXY = '{}-gunicorn'.format(
     PATTOO_API_AGENT_NAME)
+PATTOO_API_PORTAL_NAME = 'pattoo_api_portal'
+PATTOO_API_PORTAL_PROXY = '{}-gunicorn'.format(
+    PATTOO_API_PORTAL_NAME)
 
 ###############################################################################
 # Constants for data ingestion
