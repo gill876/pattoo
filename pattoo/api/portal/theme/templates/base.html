@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Addtional meta -->
+    <meta name="description" content="Pattoo Management Portal">
+    <meta name="author" content="The Palisadoes Foundation">
+
+    <title>Portal</title>
+
+    <link href="{{url_static}}/css/app.css" rel="stylesheet">
+
+    <!-- CSS block-->
+    {% block css %} {% endblock%}
+  </head>
+
+  <body>
+    <div id="main">
+        <!-- Main block-->
+        {% block main %}{% endblock %}
+    </div>
+
+    <script type="text/javascript" src="{{url_static}}/js/app.js"></script>
+    <!-- JavaScript block-->
+    {% block js %} {% endblock%}
+  </body>
+</html>
