@@ -8,4 +8,23 @@
         <br>
         <button id="test-button">Hi</button>
     </div>
+    <div>
+        <!--Login form-->
+        <form method="post" action="{{ url_for('PANEL.index') }}">
+
+            <!--CSRF Token-->
+            {{ form.csrf_token }}
+            <div>
+            {{form.username.label}}
+            {{form.username}}
+            </div>
+
+            <div>
+            {{form.password.label}}
+            {{form.password}}
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 {% endblock %}
