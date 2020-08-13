@@ -1,8 +1,9 @@
 """Initialize the PATTOO_PORTAL module."""
 
-# Import PIP3 libraries
+# Import PIP3 and Flask libraries
 from flask import Flask
 from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
 import hashlib
 import uuid
 import datetime
@@ -52,6 +53,10 @@ PATTOO_PORTAL.config['SESSION_FILE_DIR'] = \
 # Initialize Session plugin (for local session)
 sess = Session()
 sess.init_app(PATTOO_PORTAL)
+
+# Initialize CSRF Protection
+csrf = CSRFProtect(PATTOO_PORTAL)
+csrf.init_app(PATTOO_PORTAL)
 
 # Register Blueprints
 PATTOO_PORTAL.register_blueprint(
