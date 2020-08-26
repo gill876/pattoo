@@ -71,6 +71,7 @@ class Home extends React.Component {
                         </button>
                     </div>
                     <Modal mElements={modalElements} mStyle={modalStyle} modalClick={this.handleClick}/>
+                    <p>My Token = {window.token}</p>
                 </div>
             </div>
         );

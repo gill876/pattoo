@@ -120,4 +120,4 @@ def react_index(path):
     "/<path:path".
     Also we will render the initial webpage and then let VueJS take control.
     """
-    return render_template('index.html')
+    return render_template('index.html', flask_token="Hello world")
