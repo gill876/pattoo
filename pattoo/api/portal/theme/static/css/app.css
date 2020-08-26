@@ -1,4 +1,68 @@
+html {
+    min-height: 100%;
+}
+
 body {
-    background-color: black;
+    background-image: radial-gradient( circle 1224px at 10.6% 8.8%,  rgba(255,255,255,1) 0%, rgba(153,202,251,1) 100.2% );
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    height: 100%;
+}
+
+#login-button {
+    background-image: linear-gradient(to right, #232526 0%, #414345 51%, #232526 100%);
     color: white;
+    border-top-right-radius: 15%;
+    border: none;
+    height: 30px;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+#login-button:hover {
+    background-position: right center;
+}
+
+.image-container {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#login-form input, #login-form input:focus{
+    outline: none;
+    border: none;
+    background: none;
+}
+
+.form-container {
+    padding-top: 20px;
+}
+
+#user-input {
+    padding-bottom: 10px;
+}
+
+#password-input {
+    padding-bottom: 10px;
+}
+
+.add-user-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    height: 100%;
 }

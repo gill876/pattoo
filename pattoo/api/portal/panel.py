@@ -9,7 +9,8 @@ import hashlib
 import uuid
 
 # Flask imports
-from flask import Blueprint, request, abort, session, jsonify
+from flask import Blueprint
+from flask import request, abort, session, jsonify, redirect, url_for
 from flask import render_template
 from flask import  session
 
@@ -24,6 +25,7 @@ from pattoo.db.models import User as UserModel
 
 # Import server resources
 from .forms import LoginForm
+from .forms import AddUserForm
 
 # Define the PANEL global variable
 PANEL = Blueprint('PANEL', __name__)
@@ -48,9 +50,63 @@ def index():
         username = (request.form['username']).encode()
         password = (request.form['password']).encode()
 
-        with db.db_query(20156, close=False) as session:
-            user = session.query(UserModel).filter_by(
-                username=username).first()
+        # REMEMBER TO TO VALIDATE FORM
 
+        with db.db_query(20156, close=False) as db_session:
+            user = db_session.query(UserModel).filter_by(
+                username=username).first()
+            if user.password == password:
+                print(type(user.idx_user))
+                session['idx_user'] = user.idx_user
+                return redirect('/dashboard')
             print("User found")
-    return render_template('index.html', form=loginF)
+    return render_template('index.html', form=loginF), 200
+
+
+@PANEL.route('/dashboard', methods=['GET'])
+def dashboard():
+    """Dashboard.
+    
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    print(session.get('idx_user', "Nothing"))
+    if 'idx_user' not in session:
+        return redirect('/admin')
+
+    return "Dashboard"
+
+
+@PANEL.route('/adduser', methods=['GET', 'POST'])
+def adduser():
+    """Add user.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+
+    """
+    addUserF = AddUserForm()
+
+    if request.method == 'POST' and addUserF.validate_on_submit():
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        username = request.form['username']
+        password = request.form['password']
+        enabled = request.form['enabled']
+
+        print(firstname)
+        print(lastname)
+        print(username)
+        print(password)
+        print(enabled)
+
+        # with db.db_modify(20156, close=False) as db_session:
+
+
+    return render_template('adduser.html', form=addUserF)
