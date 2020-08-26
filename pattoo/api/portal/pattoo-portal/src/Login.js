@@ -37,7 +37,7 @@ class Login extends React.Component {
                 </div>*/}
 
                 <div className="items-center w-1/5 sm:w-1/6 flex flex-col items-center">
-                    <img className="" src="../img/pattoo.png" alt="Pattoo Logo"/>
+                    <img className="" src="/static/react/img/pattoo.png" alt="Pattoo Logo"/>
                     <span className="mt-5 uppercase text-base md:text-2xl text-center">sign in</span>
                 </div>  
 
