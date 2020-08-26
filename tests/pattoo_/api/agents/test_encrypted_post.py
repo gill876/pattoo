@@ -29,7 +29,7 @@ ROOT_DIR = os.path.abspath(os.path.join(
             os.path.abspath(os.path.join(
                 EXEC_DIR,
                 os.pardir)), os.pardir)), os.pardir)), os.pardir))
-_EXPECTED = '{0}pattoo{0}tests{0}test_pattoo{0}api{0}agents'.format(os.sep)
+_EXPECTED = '{0}pattoo{0}tests{0}pattoo_{0}api{0}agents'.format(os.sep)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
@@ -40,12 +40,16 @@ else:
     sys.exit(2)
 
 # Import Pattoo dependencies
-from pattoo_shared import data, converter, files
+from pattoo_shared import data
+from pattoo_shared import files
+from pattoo_shared import converter
 from pattoo_shared.constants import DATA_INT
 from pattoo_shared.phttp import PostAgent, EncryptedPostAgent
 from pattoo_shared.configuration import Config, ServerConfig
 from pattoo_shared.variables import (
     DataPoint, TargetDataPoints, AgentPolledData)
+
+from pattoo.configuration import ConfigAgentAPId
 from pattoo.api.agents import PATTOO_API_AGENT as APP
 from pattoo.constants import PATTOO_API_AGENT_NAME
 from tests.libraries.configuration import UnittestConfig
@@ -80,14 +84,9 @@ class TestEncryptedPost(LiveServerTestCase):
         return app
 
     def setUp(self):
-        """This will run each time before a test is performed
-        """
-        print('setUp')
-        gconfig = Config()  # Get config for Pgpier
-
+        """This will run each time before a test is performed."""
         # Create Pgpier object for the API
-        api_gpg = files.set_gnupg(PATTOO_API_AGENT_NAME, gconfig,
-                                  "api_test@example.com")
+        files.set_gnupg(PATTOO_API_AGENT_NAME, ConfigAgentAPId())
 
     def test_encrypted_post(self):
         """Test that the API can receive and decrypt
@@ -96,12 +95,8 @@ class TestEncryptedPost(LiveServerTestCase):
         # Initialize key variables
         config = ServerConfig()
 
-        # Get Pgpier object
-        gconfig = Config()  # Get config for Pgpier
-
         # Create Pgpier object for the agent
-        agent_gpg = files.set_gnupg("test_encrypted_agent", gconfig,
-                        "agent_test@example.com")
+        agent_gpg = files.set_gnupg("test_encrypted_agent", Config())
 
         # Make agent data
         agent_data = _make_agent_data()
@@ -149,6 +144,7 @@ class TestEncryptedPost(LiveServerTestCase):
                 filepath = '{}{}{}'.format(cache_directory, os.sep, filename)
                 os.remove(filepath)
 
+
 def _make_agent_data():
     """Create generate data to post to API server"""
     # Initialize key variables
@@ -182,6 +178,7 @@ def _make_agent_data():
 
     # Return agent data
     return apd
+
 
 if __name__ == '__main__':
     # Make sure the environment is OK to run unittests

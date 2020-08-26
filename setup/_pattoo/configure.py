@@ -2,7 +2,10 @@
 
 # Main python libraries
 import os
-import getpass
+import secrets
+
+# Pattoo libraries
+from _pattoo import shared as _shared
 from pattoo_shared.installation import configure, shared
 from pattoo_shared import files
 
@@ -21,34 +24,26 @@ def install(pattoo_home):
         os.environ['PATTOO_CONFIGDIR'] = '{0}etc{0}pattoo'.format(os.sep)
     config_directory = os.environ.get('PATTOO_CONFIGDIR')
     shared_config = {
-        'encryption': {
-            'api_email': 'api_email@example.org',
-            },
         'pattoo': {
             'language': 'en',
             'log_directory': (
                 '/var/log/pattoo'),
             'log_level': 'debug',
             'cache_directory': (
-                '/opt/pattoo-cache'),
+                '/opt/pattoo/cache'),
             'daemon_directory': (
-                '/opt/pattoo-daemon'),
+                '/opt/pattoo/daemon'),
             'system_daemon_directory': '/var/run/pattoo',
         }
     }
 
+    # Defines how agents will communicate with the API daemons
+    # Only required for travis-ci unittesting
     agent_config = {
-        'encryption': {
-            'agent_email': 'agent_email@example.org'
-        },
         'pattoo_agent_api': {
             'ip_address': '127.0.0.1',
             'ip_bind_port': 20201
         },
-        'pattoo_web_api': {
-            'ip_address': '127.0.0.1',
-            'ip_bind_port': 20202,
-        }
     }
 
     server_config = {
@@ -63,10 +58,14 @@ def install(pattoo_home):
         'pattoo_api_agentd': {
             'ip_listen_address': '0.0.0.0',
             'ip_bind_port': 20201,
+            'api_encryption_email': 'test_api@example.org',
         },
         'pattoo_apid': {
             'ip_listen_address': '0.0.0.0',
             'ip_bind_port': 20202,
+            'jwt_secret_key': secrets.token_urlsafe(64),
+            'acesss_token_exp': '15_m',
+            'refresh_token_exp': '1_D'
         },
         'pattoo_ingesterd': {
             'ingester_interval': 3600,
@@ -78,7 +77,7 @@ def install(pattoo_home):
     # Attempt to create configuration directory
     files.mkdir(config_directory)
 
-    if getpass.getuser() != 'travis':
+    if _shared.root_check() is True:
         # Create the pattoo user and group
         configure.create_user('pattoo', pattoo_home, '/bin/false', True)
 
@@ -89,10 +88,8 @@ def install(pattoo_home):
     # Create configuration
     configure.configure_component('pattoo', config_directory, shared_config)
 
-    configure.configure_component('pattoo_agent',
-                                  config_directory,
-                                  agent_config)
+    configure.configure_component(
+        'pattoo_server', config_directory, server_config)
 
-    configure.configure_component('pattoo_server',
-                                  config_directory,
-                                  server_config)
+    configure.configure_component(
+        'pattoo_agent', config_directory, agent_config)

@@ -14,8 +14,6 @@ _BIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 _ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
 _EXPECTED = '{0}pattoo{0}bin'.format(os.sep)
 if _BIN_DIRECTORY.endswith(_EXPECTED) is True:
-    default_pip_dir = '/opt/pattoo-daemon/.python'
-    sys.path.append(default_pip_dir)
     sys.path.append(_ROOT_DIRECTORY)
 else:
     print('''This script is not installed in the "{0}" directory. Please fix.\
@@ -27,7 +25,7 @@ from pattoo_shared import log
 from pattoo_shared.agent import Agent, AgentCLI, AgentAPI
 from pattoo.constants import (
     PATTOO_API_WEB_NAME, PATTOO_API_WEB_PROXY)
-from pattoo.configuration import ConfigPattoo as Config
+from pattoo.configuration import ConfigAPId as Config
 from pattoo.api.web import PATTOO_API_WEB
 from pattoo.db.db import connectivity
 
@@ -44,7 +42,6 @@ def main():
     """
     # Initialize key variables
     config = Config()
-    
 
     # Make sure we have a database
     _ = connectivity()

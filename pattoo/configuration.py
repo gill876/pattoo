@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Pattoo classes that manage various configurations."""
 
+# Python imports
 import os
+import datetime
 
 # Import project libraries
-from pattoo_shared import configuration
 from pattoo_shared.configuration import ServerConfig
 from pattoo_shared.configuration import search
 from pattoo.constants import (
@@ -12,7 +13,7 @@ from pattoo.constants import (
     PATTOO_INGESTERD_NAME, PATTOO_API_PORTAL_NAME)
 
 
-class ConfigPattoo(ServerConfig):
+class ConfigAPId(ServerConfig):
     """Class gathers all configuration information.
 
     Only processes the following YAML keys in the configuration file:
@@ -49,7 +50,7 @@ class ConfigPattoo(ServerConfig):
         sub_key = 'db_name'
 
         # Process configuration
-        result = configuration.search(
+        result = search(
             key, sub_key, self._server_yaml_configuration)
 
         # Get result
@@ -70,7 +71,7 @@ class ConfigPattoo(ServerConfig):
         sub_key = 'db_username'
 
         # Process configuration
-        result = configuration.search(
+        result = search(
             key, sub_key, self._server_yaml_configuration)
 
         # Get result
@@ -94,7 +95,7 @@ class ConfigPattoo(ServerConfig):
         if 'PATTOO_TRAVIS' in os.environ:
             result = ''
         else:
-            result = configuration.search(
+            result = search(
                 key, sub_key, self._server_yaml_configuration)
 
         # Get result
@@ -115,7 +116,7 @@ class ConfigPattoo(ServerConfig):
         sub_key = 'db_hostname'
 
         # Process configuration
-        result = configuration.search(
+        result = search(
             key, sub_key, self._server_yaml_configuration)
 
         # Get result
@@ -134,7 +135,7 @@ class ConfigPattoo(ServerConfig):
         # Get result
         key = 'pattoo_db'
         sub_key = 'db_pool_size'
-        intermediate = configuration.search(
+        intermediate = search(
             key, sub_key, self._server_yaml_configuration, die=False)
 
         # Set default
@@ -157,7 +158,7 @@ class ConfigPattoo(ServerConfig):
         # Get result
         key = 'pattoo_db'
         sub_key = 'db_max_overflow'
-        intermediate = configuration.search(
+        intermediate = search(
             key, sub_key, self._server_yaml_configuration, die=False)
 
         # Set default
@@ -211,8 +212,124 @@ class ConfigPattoo(ServerConfig):
             result = int(intermediate)
         return result
 
+    def jwt_secret_key(self):
+        """Get jwt_secret_key.
 
-class ConfigAgent(ServerConfig):
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Initialize key variables
+        key = PATTOO_API_WEB_NAME
+        sub_key = 'jwt_secret_key'
+
+        # Process configuration
+        result = search(key, sub_key, self._server_yaml_configuration)
+
+        # Ensures that jwt_secret_key is set
+        if (result is None) or result.strip(' ') == '':
+            raise Exception('Plese set JWT SECRET KEY in config file')
+
+        # Get result
+        return result
+
+    def acesss_token_exp(self):
+        """Gets access_token_exp.
+
+        Parsing config where:
+        minutes: 'm', hours: 'h', days: 'D', weeks: 'W', months: 'M'
+
+        Args:
+            None
+
+        Return:
+           exp: acesss token expiration time using datetie.timedelta
+
+        """
+        # Initialize key variables
+        key = PATTOO_API_WEB_NAME
+        sub_key = 'acesss_token_exp'
+
+        # Process configuration
+        result = search(key, sub_key, self._server_yaml_configuration)
+
+        # Setting timedelta for result
+        # Sets a default value if acesss_token_exp not found
+        exp = self.__exp(result)
+
+        if exp is None:
+            exp = datetime.timedelta(minutes=15)
+
+        return exp
+
+    def refresh_token_exp(self):
+        """Gets refresh_token_exp.
+
+        Parsing config where:
+        minutes: 'm', hours: 'h', days: 'D', weeks: 'W', months: 'M'
+
+        Args:
+            None
+
+        Return:
+            exp: refresh token expiration time using datetie.timedelta
+
+        """
+        # Initialize key variables
+        key = PATTOO_API_WEB_NAME
+        sub_key = 'refresh_token_exp'
+
+        # Process configuration
+        result = search(key, sub_key, self._server_yaml_configuration)
+
+        # Setting timedelta for result
+        # Sets a default value if acesss_token_exp not found
+        exp = self.__exp(result)
+
+        if exp is None:
+            exp = datetime.timedelta(minutes=15)
+
+        return exp
+
+    def __exp(self, time_string):
+        """Parses string to create datetime.timedelta object
+
+        Parsing config where:
+        minutes: 'm', hours: 'h', days: 'D', weeks: 'W', months: 'M'
+
+        Args:
+            time_string: string to be parsed containing a time period
+
+        Return:
+            exp: datetime.timedelta object for a given expiration time
+
+        """
+        exp = None
+        time_string = time_string.split('_')
+
+        # Creating datetime.timedelta object
+        if len(time_string) == 2:
+            time_duration = int(time_string[0])
+            time_stamp = time_string[-1]
+
+            if time_stamp == 'm':
+                exp = datetime.timedelta(minutes=time_duration)
+            elif time_stamp == 'h':
+                exp = datetime.timedelta(hours=time_duration)
+            elif time_stamp == 'D':
+                exp = datetime.timedelta(days=time_duration)
+            elif time_stamp == 'W':
+                exp = datetime.timedelta(weeks=time_duration)
+            elif time_stamp == 'M':
+                exp = datetime.timedelta(months=time_duration)
+
+        return exp
+
+
+class ConfigAgentAPId(ServerConfig):
     """Class gathers all configuration information.
 
     Only processes the following YAML keys in the configuration file:
@@ -276,6 +393,25 @@ class ConfigAgent(ServerConfig):
             result = 20202
         else:
             result = int(intermediate)
+        return result
+
+    def api_email_address(self):
+        """GET API email address from yaml file.
+
+        Args:
+            None
+
+        Returns:
+            email (str): Email address of API
+        """
+        # Initialize key variables
+        key = PATTOO_API_AGENT_NAME
+        sub_key = 'api_encryption_email'
+
+        result = search(
+            key, sub_key, self._server_yaml_configuration, die=False)
+        if result is None:
+            result = 'pattoo_api@example.org'
         return result
 
 

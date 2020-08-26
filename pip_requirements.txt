@@ -3,7 +3,7 @@
 #############################################
 
 # Pattoo packages
-PattooShared==0.0.89
+PattooShared>=0.0.97
 
 # Miscellaneous packages
 PyYAML
@@ -12,6 +12,7 @@ Flask-Session
 # Database packages
 PyMySQL
 SQLAlchemy
+mysqlclient
 
 # GraphQL packages
 graphene-sqlalchemy
@@ -19,6 +20,7 @@ graphene-sqlalchemy
 # Web server packages
 Flask
 Flask-GraphQL
+Flask-GraphQL-Auth
 Flask-Caching
 Flask-Testing
 gunicorn

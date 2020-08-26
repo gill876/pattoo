@@ -3,6 +3,8 @@
 # PIP3 imports
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from flask_graphql_auth import (mutation_jwt_required, get_jwt_identity,
+                                AuthInfoField)
 
 # pattoo imports
 from pattoo.db import db
@@ -45,6 +47,11 @@ class Favorite(SQLAlchemyObjectType, FavoriteAttribute):
         interfaces = (graphene.relay.Node,)
 
 
+class ProtectedFavorite(graphene.Union):
+    class Meta:
+        types = (Favorite, AuthInfoField)
+
+
 class CreateFavoriteInput(graphene.InputObjectType, FavoriteAttribute):
     """Arguments to create a Favorite."""
     pass
@@ -53,14 +60,17 @@ class CreateFavoriteInput(graphene.InputObjectType, FavoriteAttribute):
 class CreateFavorite(graphene.Mutation):
     """Create a Favorite Mutation."""
 
-    favorite = graphene.Field(
-        lambda: Favorite, description='Favorite created by this mutation.')
+    favorite = graphene.Field(lambda: ProtectedFavorite, description='''Favorite
+                              created by this mutation.''')
 
     class Arguments:
         Input = CreateFavoriteInput(required=True)
+        token = graphene.String()
 
-    def mutate(self, info_, Input):
-        data = _input_to_dictionary(Input)
+    @classmethod
+    @mutation_jwt_required
+    def mutate(cls, _, info_, Input):
+        data = _create(Input)
 
         favorite = FavoriteModel(**data)
         with db.db_modify(20149, close=False) as session:
@@ -86,14 +96,17 @@ class UpdateFavoriteInput(graphene.InputObjectType, FavoriteAttribute):
 
 class UpdateFavorite(graphene.Mutation):
     """Update a Favorite."""
-    favorite = graphene.Field(
-        lambda: Favorite, description='Favorite updated by this mutation.')
+    favorite = graphene.Field(lambda: ProtectedFavorite, description='''Favorite
+                              updated by this mutation.''')
 
     class Arguments:
         Input = UpdateFavoriteInput(required=True)
+        token = graphene.String()
 
-    def mutate(self, info_, Input):
-        data = _input_to_dictionary(Input)
+    @classmethod
+    @mutation_jwt_required
+    def mutate(cls, _, info_, Input):
+        data = _update(Input)
 
         # Update database
         with db.db_modify(20153) as session:
@@ -108,8 +121,8 @@ class UpdateFavorite(graphene.Mutation):
         return UpdateFavorite(favorite=favorite)
 
 
-def _input_to_dictionary(input_):
-    """Convert.
+def _update(input_):
+    """Update mutation.
 
     Args:
         input_: GraphQL "data" dictionary structure from mutation
@@ -121,6 +134,27 @@ def _input_to_dictionary(input_):
     # 'column' is a dict of DB model 'non string' column names and their types
     column = {
         'idx_favorite': DATA_INT,
+        'idx_user': DATA_INT,
+        'idx_chart': DATA_INT,
+        'order': DATA_INT,
+        'enabled': DATA_INT
+    }
+    result = utils.input_to_dictionary(input_, column=column)
+    return result
+
+
+def _create(input_):
+    """Create mutation.
+
+    Args:
+        input_: GraphQL "data" dictionary structure from mutation
+
+    Returns:
+        result: Dict of inputs
+
+    """
+    # 'column' is a dict of DB model 'non string' column names and their types
+    column = {
         'idx_user': DATA_INT,
         'idx_chart': DATA_INT,
         'order': DATA_INT,

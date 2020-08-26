@@ -1,12 +1,19 @@
 """pattoo ORM Schema for the User table."""
 
+# Standard importations
+import crypt
+
 # PIP3 imports
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphql import GraphQLError
+from flask_graphql_auth import (mutation_jwt_required, get_jwt_identity,
+                                AuthInfoField)
 
 # pattoo imports
 from pattoo.db import db
 from pattoo.db.models import User as UserModel
+from pattoo.db.table.user import User as UserTable
 from pattoo.db.schema import utils
 from pattoo_shared.constants import DATA_INT
 
@@ -34,9 +41,13 @@ class UserAttribute():
         resolver=utils.resolve_username,
         description='Username.')
 
-    password = graphene.String(
-        resolver=utils.resolve_password,
-        description='Password.')
+    password_expired = graphene.String(
+        resolver=utils.resolve_username,
+        description='Change password if True.')
+
+    role = graphene.String(
+        resolver=utils.resolve_username,
+        description='Type of user.')
 
     enabled = graphene.String(
         description='True if enabled.')
@@ -51,25 +62,53 @@ class User(SQLAlchemyObjectType, UserAttribute):
         model = UserModel
         interfaces = (graphene.relay.Node,)
 
+        # Hide certain fields as a tuple
+        exclude_fields = ('password', )
+
+class ProtectedUser(graphene.Union):
+    class Meta:
+        types = (User, AuthInfoField)
+
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a User."""
-    pass
+
+    password = graphene.String(description="Password.")
 
 
 class CreateUser(graphene.Mutation):
     """Create a User Mutation."""
 
-    user = graphene.Field(
-        lambda: User, description='User created by this mutation.')
+    user = graphene.Field(lambda: ProtectedUser,
+                          description='User created by this mutation.')
 
     class Arguments:
         Input = CreateUserInput(required=True)
+        token = graphene.String()
 
-    def mutate(self, info_, Input):
+    @classmethod
+    @mutation_jwt_required
+    def mutate(cls, _, info_, Input):
+
         data = _input_to_dictionary(Input)
-
         user = UserModel(**data)
+        token_username = get_jwt_identity()
+
+        # Getting current user making request to resource
+        current_user = UserTable(token_username)
+
+        # Accessing user data
+        person = UserTable(user.username.decode())
+
+        # Checking that the user creating the new user is an admin
+        if current_user.role != 0:
+            raise GraphQLError('Only admins can create a new user!')
+
+        # Checking that a given username is not taken
+        if person.exists:
+            raise GraphQLError('Username already exists!')
+
+        # Creating new user entry into User table
         with db.db_modify(20150, close=False) as session:
             session.add(user)
 
@@ -93,13 +132,16 @@ class UpdateUserInput(graphene.InputObjectType, UserAttribute):
 
 class UpdateUser(graphene.Mutation):
     """Update a User."""
-    user = graphene.Field(
-        lambda: User, description='User updated by this mutation.')
+    user = graphene.Field(lambda: ProtectedUser,
+                          description='User updated by this mutation.')
 
     class Arguments:
         Input = UpdateUserInput(required=True)
+        token = graphene.String()
 
-    def mutate(self, info_, Input):
+    @classmethod
+    @mutation_jwt_required
+    def mutate(cls, _, info_, Input):
         data = _input_to_dictionary(Input)
 
         # Update database
@@ -108,7 +150,7 @@ class UpdateUser(graphene.Mutation):
                 idx_user=data['idx_user']).update(data)
 
         # Get code from database
-        with db.db_query(20152, close=False) as session:
+        with db.db_query(20163, close=False) as session:
             user = session.query(UserModel).filter_by(
                 idx_user=data['idx_user']).first()
 
@@ -130,5 +172,11 @@ def _input_to_dictionary(input_):
         'idx_user': DATA_INT,
         'enabled': DATA_INT
     }
+
+    # Get password and encrypt
+    password = input_.get('password')
+    if password is not None:
+        input_['password'] = crypt.crypt(password)
+
     result = utils.input_to_dictionary(input_, column=column)
     return result

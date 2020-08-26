@@ -20,7 +20,7 @@ else:
     sys.exit(2)
 
 from tests.libraries.configuration import UnittestConfig
-from pattoo.configuration import ConfigPattoo, ConfigAgent, ConfigIngester
+from pattoo.configuration import ConfigAPId, ConfigAgentAPId, ConfigIngester
 
 
 class TestConfiguration(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestConfiguration(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    config = ConfigPattoo()
+    config = ConfigAPId()
 
     def test___init__(self):
         """Testing method init."""
@@ -160,13 +160,13 @@ class TestConfiguration(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-class TestConfigAgent(unittest.TestCase):
-    """Checks all ConfigAgent methods."""
+class TestConfigAgentAPId(unittest.TestCase):
+    """Checks all ConfigAgentAPId methods."""
 
     ##########################################################################
     # Initialize variable class
     ##########################################################################
-    config = ConfigAgent()
+    config = ConfigAgentAPId()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -253,6 +253,14 @@ class TestConfigAgent(unittest.TestCase):
 
         # Test
         result = self.config.agent_cache_directory(agent_id)
+        self.assertEqual(result, expected)
+
+    def test_api_email_address(self):
+        """Test api email address retrieval"""
+        # Test from yaml file
+        result = self.config.api_email_address()
+        expected = 'test_api@example.org'
+
         self.assertEqual(result, expected)
 
 

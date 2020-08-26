@@ -11,7 +11,7 @@ from sqlalchemy import create_engine
 # Pattoo libraries
 from pattoo_shared import log
 from pattoo_shared import data
-from pattoo.configuration import ConfigPattoo as Config
+from pattoo.configuration import ConfigAPId as Config
 from pattoo.db import URL
 from pattoo.db.models import BASE
 from pattoo.db.table import (
@@ -42,7 +42,7 @@ def insertions():
     _insert_agent_xlate()
 
     # Insert User
-    _insert_user()
+    default_users = _insert_user()
 
     # Insert Chart
     _insert_chart()
@@ -50,6 +50,13 @@ def insertions():
     # Insert Favorite
     _insert_favorite()
 
+    # Printing out default user credentials
+    for username, password, role_no in default_users:
+        role = 'Admin' if role_no == 0 else 'Basic'
+        print('\n\nUsername: {}\nPassword: {}\nRole: {} '.format(username,
+                                                                     password,
+                                                                     role))
+    print('')
 
 def _insert_language():
     """Insert starting default entries into the Language table.
@@ -344,22 +351,49 @@ def _insert_user():
         None
 
     Returns:
-        None
+        default_users: dictionary containing the default user credentials
 
     """
+    default_users = []
+
     # Insert into User
     if user.idx_exists(1) is False:
-        password = ''.join(random.SystemRandom().choice(
-            string.ascii_uppercase + string.digits) for _ in range(50))
+
+        # Creating initial password
+        password = data.hashstring(''.join(random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits) for _ in range(50)))
+
+        # Inserting default user
         user.insert_row(
             DbRowUser(
                 username='pattoo',
-                password=data.hashstring(password),
+                password=password,
                 first_name='pattoo',
                 last_name='pattoo',
+                role=1,
+                password_expired=1,
                 enabled=0)
             )
+        default_users.append(('pattoo', password, 1))
 
+    # Insert admin into User table
+    if user.idx_exists(2) is False:
+        # Creating initial password
+        password = data.hashstring(''.join(random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits) for _ in range(50)))
+        user.insert_row(
+            DbRowUser(
+                username='admin',
+                password=password,
+                first_name='admin',
+                last_name='admin',
+                role=0,
+                password_expired=1,
+                enabled=1)
+            )
+        default_users.append(('admin', password, 0))
+
+    return default_users
 
 def _insert_chart():
     """Insert starting default entries into the Chart table.
