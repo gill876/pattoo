@@ -75,7 +75,7 @@ class TestBasicFunctions(LiveServerTestCase):
         expected = 'The Pattoo Portal is Operational.\n'
 
         # Create URL
-        url = 'http://127.0.0.1:40204/pattoo/api/v1/portal/status'
+        url = 'http://127.0.0.1:40204/portal/status'
 
         # Check response
         with requests.get(url) as response:

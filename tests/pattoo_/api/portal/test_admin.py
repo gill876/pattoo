@@ -31,7 +31,7 @@ else:
     sys.exit(2)
 
 from pattoo_shared import data
-from pattoo_shared.configuration import Config
+from pattoo_shared.configuration import ServerConfig as Config
 
 from tests.libraries.configuration import UnittestConfig
 from pattoo.api.portal import PATTOO_PORTAL as APP
