@@ -7,6 +7,7 @@ import sys
 from random import randrange
 import hashlib
 import uuid
+import crypt
 
 # Flask imports
 from flask import Blueprint
@@ -31,36 +32,45 @@ from .forms import AddUserForm
 PANEL = Blueprint('PANEL', __name__)
 
 
-@PANEL.route('/admin', methods=['GET', 'POST'])
-def index():
-    """Admin portal.
+@PANEL.route('/api/login', methods=['POST'])
+def login():
+    """Login API link.
 
     Args:
         None
 
     Returns:
-        render (html): Admin portal page
-        response (int): Response code
+        response (dict): Response Message
 
     """
     # Prepare login form
     loginF = LoginForm()
 
     if request.method == 'POST':
-        username = (request.form['username']).encode()
-        password = (request.form['password']).encode()
+        response = {'data':{'message': 'Form not validated'}}
+        loginF.username.data = request.form['username']
+        loginF.password.data = request.form['password']
+        print("***Inside POST***")
 
-        # REMEMBER TO TO VALIDATE FORM
-
-        with db.db_query(20164, close=False) as db_session:
-            user = db_session.query(UserModel).filter_by(
-                username=username).first()
-            if user.password == password:
-                print(type(user.idx_user))
-                session['idx_user'] = user.idx_user
-                return redirect('/dashboard')
-            print("User found")
-    return render_template('index.html', form=loginF), 200
+        if loginF.validate_on_submit():
+            response = {'data':{'message': 'Username not found'}}
+            print("***Inside Validate***")
+            username = (loginF.username.data).encode()
+            password = loginF.password.data
+            with db.db_query(20164, close=False) as db_session:
+                user = db_session.query(UserModel).filter_by(
+                    username=username).first()
+                response = {'data':{'message': 'Password incorrect'}}
+                print("***User found***")
+                db_password_decoded = (user.password).decode()
+                db_password_parts = (db_password_decoded).split('$')
+                print("***HASHED: {}***".format(db_password_parts))
+                hashed_form_password = crypt.crypt(password, "${}${}".format(db_password_parts[1], db_password_parts[2]))
+                if hashed_form_password == db_password_decoded:
+                    response = {'data':{'message': 'Login successful'}}
+                    print("***Password matched! {}***".format(type(user.idx_user)))
+                    session['idx_user'] = user.idx_user
+    return response
 
 
 @PANEL.route('/dashboard', methods=['GET'])

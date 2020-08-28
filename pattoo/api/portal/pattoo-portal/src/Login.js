@@ -23,9 +23,24 @@ class Login extends React.Component {
     };
     
     handleSubmit(event) {
-        alert('Username: ' + this.state.username + '\nPassword: ' +
-        this.state.password)
-        event.preventDefault()
+        event.preventDefault();
+
+        const csrfToken = document.getElementById('csrf-token').getAttribute("content");
+        const loginForm = document.getElementById('login-form');
+        const loginData = new FormData(loginForm);
+        const login_path = '/api/login'
+        const login_options = {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            credentials: 'same-origin',
+            body: loginData
+        }
+
+        fetch(login_path, login_options).then(function(response){
+            return response.json();
+        }).then(function (jsonResponse){
+            console.log(jsonResponse);
+        })
     }
 
     render() {
