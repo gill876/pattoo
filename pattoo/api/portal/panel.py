@@ -23,6 +23,7 @@ from pattoo.constants import PATTOO_API_AGENT_NAME
 from pattoo_shared.files import get_gnupg
 from pattoo.db import db
 from pattoo.db.models import User as UserModel
+from pattoo.db.models import Agent as AgentModel
 
 # Import server resources
 from .forms import LoginForm
@@ -91,21 +92,60 @@ def login():
     return response
 
 
-@PANEL.route('/dashboard', methods=['GET'])
-def dashboard():
-    """Dashboard.
+@PANEL.route('/api/user', methods=['GET'])
+def user():
+    """User route.
     
     Args:
         None
 
     Returns:
-        None
-    """
-    print(session.get('idx_user', "Nothing"))
-    if 'idx_user' not in session:
-        return redirect('/admin')
+        response (dict): Response Message
 
-    return "Dashboard"
+    """
+    if session.get('idx_user', None) is None:
+        response = {'data':{'message': 'Login first'}}
+        return response
+    
+    response = {'data':{'message': 'Query did not run'}}
+    with db.db_query(20164, close=False) as db_session:
+        users = db_session.query(UserModel).order_by(UserModel.idx_user).all()
+        pp_users = []
+        for user in users:
+            pp_users+= [
+                {
+                    "idx_user": user.idx_user, "first_name": (user.first_name).decode(),
+                    "last_name": (user.last_name).decode(),
+                    "username": (user.username).decode(), "role": user.role,
+                    "enabled": user.enabled
+                }
+            ]
+        response = {'data':{'users': pp_users}}
+    return response
+
+
+@PANEL.route('/api/agent', methods=['GET'])
+def agents():
+    """Agents route.
+    
+    Args:
+        None
+
+    Returns:
+        response (dict): Response Message
+
+    """
+    if session.get('idx_user', None) is None:
+        response = {'data':{'message': 'Login first'}}
+        return response
+    response = {'data':{'message': 'Query did not run'}}
+    with db.db_query(20165, close=False) as db_session:
+        agents = db_session.query(
+            AgentModel.agent_id, AgentModel.agent_polled_target,
+            AgentModel.agent_polled_target, AgentModel.agent_program
+        ).all()
+        response = {'data':{'agents': agents}}
+    return response    
 
 
 @PANEL.route('/adduser', methods=['GET', 'POST'])

@@ -43,7 +43,7 @@ class UsersRow extends React.Component {
       const first_name = this.props.user.first_name;
       const last_name = this.props.user.last_name;
       const username = this.props.user.username;
-      const user_type = this.props.user.user_type;
+      const role = this.props.user.role;
       return (
         <tbody className="text-gray-700">
           <tr className={this.state.deleteRow}>
@@ -66,7 +66,7 @@ class UsersRow extends React.Component {
                     </label>
                 </div>
             </td>
-            <td className="text-left py-3 px-4">{user_type}</td>
+            <td className="text-left py-3 px-4">{role}</td>
             <td className="text-center py-3 px-4">
                 <div className={this.state.deleteButton}
                     onClick={this.handleClick}>
