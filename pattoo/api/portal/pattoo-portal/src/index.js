@@ -20,7 +20,7 @@ ReactDOM.render(
     <BrowserRouter>
         <Switch>
           <Route exact path="/admin" component={Home} />
-          <Route path="/admin/login" component={Login} />
+          <Route path="/login" component={Login} />
           <Route path="/admin/users" component={Users} />
           <Route path="/admin/agents" component={Agents} />
           <Route path="/admin/purge" component={PurgeData} />
