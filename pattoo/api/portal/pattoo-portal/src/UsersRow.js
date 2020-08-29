@@ -4,7 +4,7 @@ class UsersRow extends React.Component {
     constructor(props){
       super (props);
       this.state = {
-        enabled: false,
+        enabled: this.props.user.enabled,
         deleteButton: 'cursor-pointer',
         deleteRow: '',
         deleteIconColor: 'red'
