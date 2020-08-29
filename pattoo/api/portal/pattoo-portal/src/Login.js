@@ -23,6 +23,7 @@ class Login extends React.Component {
     };
     
     handleSubmit(event) {
+        let self = this;
         event.preventDefault();
 
         const csrfToken = document.getElementById('csrf-token').getAttribute("content");
@@ -39,8 +40,12 @@ class Login extends React.Component {
         fetch(login_path, login_options).then(function(response){
             return response.json();
         }).then(function (jsonResponse){
-            console.log(jsonResponse);
-        })
+            if (jsonResponse.data.message === 'Login successful') {
+                self.props.history.push('/admin/agents');
+            }
+        }).catch(function (error){
+            console.log(error);
+        });
     }
 
     render() {
