@@ -32,7 +32,7 @@ class Users extends React.Component {
     }
 
     fetchFailed = (error) => {
-        alert("Error: " + error);
+        console.log("Error: " + error);
     }
 
     render() {
