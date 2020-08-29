@@ -50,26 +50,44 @@ def login():
         response = {'data':{'message': 'Form not validated'}}
         loginF.username.data = request.form['username']
         loginF.password.data = request.form['password']
-        print("***Inside POST***")
+
+        # Validate that form has all required data fields entered and
+        # the correct CSRF token
 
         if loginF.validate_on_submit():
+            # Have a response so that if the user doesn't exist,
+            # a response would be sent
             response = {'data':{'message': 'Username not found'}}
-            print("***Inside Validate***")
-            username = (loginF.username.data).encode()
+            username = (loginF.username.data).encode() # Encode for database query
             password = loginF.password.data
             with db.db_query(20164, close=False) as db_session:
                 user = db_session.query(UserModel).filter_by(
                     username=username).first()
+
+                # If the user was found, but the password did not match,
+                # produce error response
                 response = {'data':{'message': 'Password incorrect'}}
-                print("***User found***")
+
+                # Decode the password from the database to compare with the
+                # form password
                 db_password_decoded = (user.password).decode()
+
+                # Separate the hash type, salt and password
                 db_password_parts = (db_password_decoded).split('$')
-                print("***HASHED: {}***".format(db_password_parts))
-                hashed_form_password = crypt.crypt(password, "${}${}".format(db_password_parts[1], db_password_parts[2]))
+
+                # Hash form password with hash type and salt from the database
+                hashed_form_password = crypt.crypt(
+                    password, "${}${}".format(db_password_parts[1], db_password_parts[2])
+                )
+
+                # Compare hashed password with database hashed password
                 if hashed_form_password == db_password_decoded:
                     response = {'data':{'message': 'Login successful'}}
-                    print("***Password matched! {}***".format(type(user.idx_user)))
+
+                    # Store user ID in session
                     session['idx_user'] = user.idx_user
+
+    # New Flask automatically turns returned dictionary into json
     return response
 
 
