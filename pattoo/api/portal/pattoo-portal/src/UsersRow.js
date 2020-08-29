@@ -15,13 +15,29 @@ class UsersRow extends React.Component {
     };
   
     handleChange(event) {
-        const target = event.target;
-        alert(this.state.enabled);
-        if (target.name === 'toggle'){
-            this.setState({
-                enabled: !this.state.enabled
-            });
+      let self = this;
+      const target = event.target;
+      const userID = target.dataset.value;
+      if (target.name === 'toggle'){
+        const user_uri = '/api/user'
+        const user_options = {
+            method: 'GET'
         }
+
+        const enable_uri = `${user_uri}?enable=${this.state.enabled}&user=${userID}`
+        fetch(enable_uri, user_options).then(function (response){
+          return response.json();
+        }).then(function (jsonResponse){
+          console.log(jsonResponse);
+          if (jsonResponse.data.message === 'Changed'){
+            self.setState({
+              enabled: (this.state.enabled === 0)? 1: 0
+            });
+          } else {
+            event.preventDefault();
+          }
+        })
+      }
     };
 
     handleClick(event) {
@@ -58,6 +74,7 @@ class UsersRow extends React.Component {
                             type="checkbox"
                             name="toggle"
                             id="toggle"
+                            data-value={idx_user}
                             defaultChecked={this.state.enabled}
                             onChange={this.handleChange}
                             >

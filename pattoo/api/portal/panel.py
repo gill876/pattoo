@@ -104,7 +104,19 @@ def user():
 
     """
     if session.get('idx_user', None) is None:
-        response = {'data':{'message': 'Login first'}}
+        response = {'data': {'message': 'Login first'}}
+        return response
+
+    enable = request.args.get('enable', type=int)
+    user_id = request.args.get('user', type=int)
+    if enable is not None and user_id is not None:
+        change_enable = 1 if (enable == 0) else 0
+        response = {'data': {'user_id': user_id, 'enable': change_enable, 'message': 'Not changed'}}
+        with db.db_modify(20166, die=True) as db_session:
+            db_session.query(UserModel).filter(
+                UserModel.idx_user == user_id
+            ).update({'enabled': change_enable})
+            response = {'data': {'user_id': user_id, 'enable': change_enable, 'message': 'Changed'}}
         return response
     
     response = {'data':{'message': 'Query did not run'}}
