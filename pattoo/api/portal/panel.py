@@ -120,7 +120,7 @@ def user():
                     "enabled": user.enabled
                 }
             ]
-        response = {'data':{'users': pp_users}}
+        response = {'data':{'users': pp_users, 'message': 'Query ran'}}
     return response
 
 

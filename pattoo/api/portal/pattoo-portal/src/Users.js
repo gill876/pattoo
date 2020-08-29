@@ -32,7 +32,7 @@ class Users extends React.Component {
     }
 
     fetchFailed = (error) => {
-        alert("Fetch failed" + error);
+        alert("Error: " + error);
     }
 
     render() {
@@ -42,18 +42,25 @@ class Users extends React.Component {
             method: 'GET'
         }
 
-        let users = []
         fetch(user_path, user_options).then(function (response){
             return response.json();
         }).then(function (jsonResponse){
+            let users = []
+            let pass = jsonResponse.data.message;
+            if (pass === 'Login first') {
+                alert("Please login");
+                self.props.history.push('/login');
+            }
             users = jsonResponse.data.users;
-            const user_rows = users.map((user)=>
-                <UsersRow key={user.idx_user} user={user}/>
-            )
+            if (users.length > 0){
+                const user_rows = users.map((user)=>
+                    <UsersRow key={user.idx_user} user={user}/>
+                )
 
-            self.setState({
-                display: self.viewTable(user_rows)
-            });
+                self.setState({
+                    display: self.viewTable(user_rows)
+                });
+            }
         }).catch(function (error) {
             self.setState({
                 display: self.fetchFailed(error)
