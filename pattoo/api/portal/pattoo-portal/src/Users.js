@@ -8,7 +8,6 @@ class Users extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            success: false,
             display: null
         }
         this.viewTable = this.viewTable.bind(this);
@@ -53,12 +52,10 @@ class Users extends React.Component {
             )
 
             self.setState({
-                success: true,
                 display: self.viewTable(user_rows)
             });
         }).catch(function (error) {
             self.setState({
-                success: false,
                 display: self.fetchFailed(error)
             })
         })
