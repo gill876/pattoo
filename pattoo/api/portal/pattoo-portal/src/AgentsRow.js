@@ -7,7 +7,7 @@ class AgentsRow extends React.Component {
     constructor(props){
       super (props);
       this.state = {
-        enabled: false,
+        enabled: this.props.agent.enabled,
         deleteButton: 'cursor-pointer',
         deleteRow: '',
         deleteIconColor: 'red',
@@ -20,12 +20,32 @@ class AgentsRow extends React.Component {
     };
   
     handleChange(event) {
+        let self = this;
         const target = event.target;
-        alert(this.state.enabled);
+        const agentID = target.dataset.value;
         if (target.name === 'toggle'){
-            this.setState({
-                enabled: !this.state.enabled
-            });
+            const agent_uri = '/api/agent'
+            const agent_options = {
+                method: 'GET'
+            }
+
+            const enable_uri = `${agent_uri}?enable=${this.state.enabled}&agent=${agentID}`
+            fetch(enable_uri, agent_options).then(function (response){
+                return response.json();
+            }).then(function (jsonResponse){
+                if (jsonResponse.data.message === 'Changed'){
+                    self.setState({
+                      enabled: (self.state.enabled === 0)? 1: 0
+                    });
+                    let alrt = (self.state.enabled === 1)? "on": "off";
+                    alert(`Agent turned ${alrt}`);
+                    self.props.updateRow(event);
+                  } else {
+                    event.preventDefault();
+                  }
+            }).catch(function (error){
+                console.log(error);
+            })
         }
     };
 
@@ -71,6 +91,7 @@ class AgentsRow extends React.Component {
     }
   
     render() {
+        const idx_agent = this.props.agent.idx_agent;
         const agent_id = this.props.agent.agent_id;
         const agent_polled_target = this.props.agent.agent_polled_target;
         const agent_program = this.props.agent.agent_program;
@@ -105,7 +126,7 @@ class AgentsRow extends React.Component {
                 id="modal-button"
                 className="text-left py-3 px-4 text-black hover:text-blue-500 cursor-pointer"
                 onClick={this.handleClick}
-                data-value={agent_id}>
+                data-value={idx_agent}>
                 {agent_polled_target}
             </td>
             <td className="text-left py-3 px-4">{agent_program}</td>
@@ -116,6 +137,7 @@ class AgentsRow extends React.Component {
                             type="checkbox"
                             name="toggle"
                             id="toggle"
+                            data-value={idx_agent}
                             defaultChecked={this.state.enabled}
                             onChange={this.handleChange}
                             >
