@@ -40,11 +40,7 @@ class Agents extends React.Component {
         )
     }
 
-    fetchFailed = (error) => {
-        console.log("Error: " + error);
-    }
-
-    render() {
+    componentDidMount(){
         let self = this;
         const agent_path = '/api/agent'
         const agent_options = {
@@ -79,7 +75,13 @@ class Agents extends React.Component {
                 display: self.fetchFailed(error)
             })
         })
+    }
 
+    fetchFailed = (error) => {
+        console.log("Error: " + error);
+    }
+
+    render() {
         return (
             this.state.display
         );
