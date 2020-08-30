@@ -112,7 +112,7 @@ def user():
     if enable is not None and user_id is not None:
         change_enable = 1 if (enable == 0) else 0
         response = {'data': {'user_id': user_id, 'enable': change_enable, 'message': 'Not changed'}}
-        with db.db_modify(20166, die=True) as db_session:
+        with db.db_modify(20185, die=True) as db_session:
             db_session.query(UserModel).filter(
                 UserModel.idx_user == user_id
             ).update({'enabled': change_enable})
@@ -120,7 +120,7 @@ def user():
         return response
     
     response = {'data':{'message': 'Query did not run'}}
-    with db.db_query(20164, close=False) as db_session:
+    with db.db_query(20186, close=False) as db_session:
         users = db_session.query(UserModel).order_by(UserModel.idx_user).all()
         pp_users = []
         for user in users:
@@ -152,7 +152,7 @@ def agents():
         return response
 
     response = {'data':{'message': 'Query did not run'}}
-    with db.db_query(20165, close=False) as db_session:
+    with db.db_query(20187, close=False) as db_session:
         agents = db_session.query(
             AgentModel.idx_agent, AgentModel.agent_id,
             AgentModel.agent_polled_target, AgentModel.agent_program
