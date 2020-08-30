@@ -8,10 +8,18 @@ class Users extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            display: null
+            display: null,
+            rowState: false
         }
         this.viewTable = this.viewTable.bind(this);
         this.fetchFailed = this.fetchFailed.bind(this);
+        this.rowChange = this.rowChange.bind(this);
+    }
+
+    rowChange = (event) => {
+        this.setState({
+            rowState: !this.state.rowState
+        })
     }
 
     viewTable = (user_rows) => {
@@ -54,7 +62,7 @@ class Users extends React.Component {
             users = jsonResponse.data.users;
             if (users.length > 0){
                 const user_rows = users.map((user)=>
-                    <UsersRow key={user.idx_user} user={user}/>
+                    <UsersRow key={user.idx_user} user={user} updateRow={self.rowChange}/>
                 )
 
                 self.setState({

@@ -28,14 +28,18 @@ class UsersRow extends React.Component {
         fetch(enable_uri, user_options).then(function (response){
           return response.json();
         }).then(function (jsonResponse){
-          console.log(jsonResponse);
           if (jsonResponse.data.message === 'Changed'){
             self.setState({
-              enabled: (this.state.enabled === 0)? 1: 0
+              enabled: (self.state.enabled === 0)? 1: 0
             });
+            let alrt = (self.state.enabled === 1)? "on": "off";
+            alert(`User turned ${alrt}`);
+            self.props.updateRow(event);
           } else {
             event.preventDefault();
           }
+        }).catch(function (error){
+          console.log(error);
         })
       }
     };
