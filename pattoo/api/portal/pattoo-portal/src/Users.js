@@ -39,11 +39,7 @@ class Users extends React.Component {
         )
     }
 
-    fetchFailed = (error) => {
-        console.log("Error: " + error);
-    }
-
-    render() {
+    componentDidMount(){
         let self = this;
         const user_path = '/api/user'
         const user_options = {
@@ -74,7 +70,13 @@ class Users extends React.Component {
                 display: self.fetchFailed(error)
             })
         })
+    }
 
+    fetchFailed = (error) => {
+        console.log("Error: " + error);
+    }
+
+    render() {
         return (
             this.state.display
         )
