@@ -148,15 +148,24 @@ def agents():
 
     """
     if session.get('idx_user', None) is None:
-        response = {'data':{'message': 'Login first'}}
+        response = {'data': {'message': 'Login first'}}
         return response
+
     response = {'data':{'message': 'Query did not run'}}
     with db.db_query(20165, close=False) as db_session:
         agents = db_session.query(
-            AgentModel.agent_id, AgentModel.agent_polled_target,
+            AgentModel.idx_agent, AgentModel.agent_id,
             AgentModel.agent_polled_target, AgentModel.agent_program
-        ).all()
-        response = {'data':{'agents': agents}}
+        ).order_by(AgentModel.idx_agent).all()
+
+        pp_agents = []
+        for agent in agents:
+            pp_agents+= [{
+                'idx_agent': agent[0], 'agent_id': (agent[1]).decode(),
+                'agent_polled_target': (agent[2]).decode(),
+                'agent_program': (agent[3]).decode()
+            }]
+        response = {'data':{'agents': pp_agents, 'message': 'Query ran'}}
     return response    
 
 
