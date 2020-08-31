@@ -63,7 +63,7 @@ def login():
             response = {'data':{'message': 'Username not found'}}
             username = (loginF.username.data).encode() # Encode for database query
             password = loginF.password.data
-            with db.db_query(20164, close=False) as db_session:
+            with db.db_query(20175, close=False) as db_session:
                 user = db_session.query(UserModel).filter_by(
                     username=username).first()
 
