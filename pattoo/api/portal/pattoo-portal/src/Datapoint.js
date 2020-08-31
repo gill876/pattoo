@@ -10,7 +10,7 @@ class Datapoint extends React.Component {
             <DatapointRow key={datapoint.datapoint_name} datapoint={datapoint}/>
         );
         return (
-            <table className="w-auto bg-white overflow-x-scroll">
+            <table className="w-auto bg-white overflow-y-scroll">
                 <DatapointHead/>
                 {dataRows}
             </table>
