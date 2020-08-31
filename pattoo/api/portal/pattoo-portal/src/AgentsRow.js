@@ -85,7 +85,7 @@ class AgentsRow extends React.Component {
 
     componentDidMount(){
         let self = this;
-        const modal_path = '/api/modal'
+        const modal_path = '/api/datapoints'
         const modal_options = {
             method: 'GET'
         }

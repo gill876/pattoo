@@ -4,6 +4,7 @@
 from flask import Flask
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
+from flask import url_for
 import hashlib
 import uuid
 import datetime
@@ -16,6 +17,9 @@ from pattoo_shared import files
 # Import PATTOO_PORTAL Blueprints
 from pattoo.api.portal.panel import PANEL
 from pattoo.api.portal.status import STATUS
+from pattoo.api.portal.agents import AGENTS
+from pattoo.api.portal.users import USERS
+from pattoo.api.portal.datapoints import DATAPOINTS
 
 # Setup flask
 PATTOO_PORTAL = Flask(
@@ -63,6 +67,12 @@ PATTOO_PORTAL.register_blueprint(
     PANEL, url_prefix='')
 PATTOO_PORTAL.register_blueprint(
     STATUS, url_prefix='')
+PATTOO_PORTAL.register_blueprint(
+    AGENTS, url_prefix='')
+PATTOO_PORTAL.register_blueprint(
+    USERS, url_prefix='')
+PATTOO_PORTAL.register_blueprint(
+    DATAPOINTS, url_prefix='')
 
 # Function to easily find your assests
 PATTOO_PORTAL.jinja_env.globals['static'] = (

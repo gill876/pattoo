@@ -1,0 +1,55 @@
+"""Routes for users."""
+
+# Flask imports
+from flask import Blueprint
+from flask import request, session
+
+# Pattoo imports
+from pattoo.db import db
+from pattoo.db.models import User as UserModel
+
+# Define the AGENTS global variable
+USERS = Blueprint('USERS', __name__)
+
+@USERS.route('/api/user', methods=['GET'])
+def user():
+    """User route.
+    
+    Args:
+        None
+
+    Returns:
+        response (dict): Response Message
+
+    """
+    if session.get('idx_user', None) is None:
+        response = {'data': {'message': 'Login first'}}
+        return response
+
+    enable = request.args.get('enable', type=int)
+    user_id = request.args.get('user', type=int)
+    if enable is not None and user_id is not None:
+        change_enable = 1 if (enable == 0) else 0
+        response = {'data': {'user_id': user_id, 'enable': change_enable, 'message': 'Not changed'}}
+        with db.db_modify(20185, die=True) as db_session:
+            db_session.query(UserModel).filter(
+                UserModel.idx_user == user_id
+            ).update({'enabled': change_enable})
+            response = {'data': {'user_id': user_id, 'enable': change_enable, 'message': 'Changed'}}
+        return response
+    
+    response = {'data':{'message': 'Query did not run'}}
+    with db.db_query(20186, close=False) as db_session:
+        users = db_session.query(UserModel).order_by(UserModel.idx_user).all()
+        pp_users = []
+        for user in users:
+            pp_users+= [
+                {
+                    "idx_user": user.idx_user, "first_name": (user.first_name).decode(),
+                    "last_name": (user.last_name).decode(),
+                    "username": (user.username).decode(), "role": user.role,
+                    "enabled": user.enabled
+                }
+            ]
+        response = {'data':{'users': pp_users, 'message': 'Query ran'}}
+    return response
