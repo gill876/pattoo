@@ -22,7 +22,7 @@ class Modal extends React.Component {
                         >
                         <div className="relative w-auto my-6 mx-auto max-w-full md:max-w-3xl">
                             {/*content*/}
-                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                            <div style={{height: '500px'}} className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
                                     <h3 className="px-4 text-3xl font-semibold">
@@ -40,7 +40,7 @@ class Modal extends React.Component {
                                     </button>
                                 </div>
                                 {/*body*/}
-                                <div className="relative p-6 flex-auto overflow-auto">
+                                <div className="relative p-6 flex-auto overflow-y-scroll">
                                     {this.props.mElements.content}
                                 </div>
                                 {/*footer*/}
