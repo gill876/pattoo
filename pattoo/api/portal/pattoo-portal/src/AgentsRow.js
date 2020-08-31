@@ -54,7 +54,7 @@ class AgentsRow extends React.Component {
         const target = event.target;
         const targetID = target.id;
         if (target.className === 'cursor-pointer') {
-            const confirm = prompt("Enter \"OK\" to permanently delete user", "OK");
+            const confirm = prompt("Enter \"OK\" to permanently delete agent", "OK");
             (confirm === "OK")? 
             this.setState({
                 deleteButton: 'cursor-pointer noclick-btn',
@@ -74,14 +74,6 @@ class AgentsRow extends React.Component {
             }
         } else if (targetID === "close-button" || targetID === "close-icon" || targetID === "close-out") {
             alert("閉める")
-            if (JSON.stringify(this.state.modalView) === JSON.stringify({})) {
-                this.setState({
-                    modalView: {display: "none"},
-                    modalBlur: {display: "none"}
-                });
-            }
-        } else if (targetID === "save-button") {
-            alert("Changes saved");
             if (JSON.stringify(this.state.modalView) === JSON.stringify({})) {
                 this.setState({
                     modalView: {display: "none"},
@@ -119,9 +111,7 @@ class AgentsRow extends React.Component {
         const agent_program = this.props.agent.agent_program;
         const ts_created = this.props.agent.ts_created;
 
-        //Use Agent ID to retrieve the datapoints for that agent
         const modalStyle = {bLur: this.state.modalBlur, vIew: this.state.modalView};
-        //Fetch server for actual data
         const _datapoints = this.state.dataPoints;
 
         const datapoints = <Datapoint datapoints={_datapoints}/>
