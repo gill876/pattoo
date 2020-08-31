@@ -1,35 +1,25 @@
-"""Pattoo. Posting Routes."""
+"""Routes for essential portal functionalities."""
 
-# Standard imports
-import os
-import json
-import sys
-from random import randrange
-import hashlib
-import uuid
+# Standard import
 import crypt
 
 # Flask imports
 from flask import Blueprint
-from flask import request, abort, session, jsonify, redirect, url_for
+from flask import request, abort, session
 from flask import render_template
 
 # pattoo imports
 from pattoo_shared import log
-from pattoo_shared.constants import CACHE_KEYS
 from pattoo_shared.configuration import ServerConfig as Config
-from pattoo.constants import PATTOO_API_AGENT_NAME
-from pattoo_shared.files import get_gnupg
 from pattoo.db import db
 from pattoo.db.models import User as UserModel
 
 # Import server resources
 from .forms import LoginForm
-from .forms import AddUserForm
+# from .forms import AddUserForm
 
 # Define the PANEL global variable
 PANEL = Blueprint('PANEL', __name__)
-
 
 @PANEL.route('/api/login', methods=['POST'])
 def login():
@@ -90,44 +80,45 @@ def login():
     return response
 
 
-@PANEL.route('/adduser', methods=['GET', 'POST'])
-def adduser():
-    """Add user.
-    
-    Args:
-        None
-        
-    Returns:
-        None
+# @PANEL.route('/adduser', methods=['GET', 'POST'])
+# def adduser():
+#    """Add user.
 
-    """
-    addUserF = AddUserForm()
+#    Args:
+#        None
 
-    if request.method == 'POST' and addUserF.validate_on_submit():
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
-        username = request.form['username']
-        password = request.form['password']
-        enabled = request.form['enabled']
+#    Returns:
+#        None
 
-        print(firstname)
-        print(lastname)
-        print(username)
-        print(password)
-        print(enabled)
+#    """
+#    addUserF = AddUserForm()
 
-        # with db.db_modify(20156, close=False) as db_session:
+#    if request.method == 'POST' and addUserF.validate_on_submit():
+#        firstname = request.form['firstname']
+#        lastname = request.form['lastname']
+#        username = request.form['username']
+#        password = request.form['password']
+#        enabled = request.form['enabled']
+
+#        # with db.db_modify(20156, close=False) as db_session:
 
 
-    return render_template('adduser.html', form=addUserF)
+#    return render_template('adduser.html', form=addUserF)
 
 @PANEL.route('/', defaults={'path': ''})
 @PANEL.route('/<path:path>')
 def react_index(path):
     """
-    Because we use HTML5 history mode in vue-router we need to configure our
-    web server to redirect all routes to index.html. Hence the additional route
-    "/<path:path".
-    Also we will render the initial webpage and then let VueJS take control.
+    Render index.html and let React handle the rest.
+
+    The additional route "/<path:path" is to redirect all
+    routes to index.html
+
+    Args:
+        None
+
+    Returns:
+        (html): index.html render
+    
     """
-    return render_template('index.html', flask_token="Hello world")
+    return render_template('index.html')
