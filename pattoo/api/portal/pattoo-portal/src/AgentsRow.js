@@ -12,7 +12,8 @@ class AgentsRow extends React.Component {
         deleteRow: '',
         deleteIconColor: 'red',
         modalView: {display: "none"},
-        modalBlur: {display: "none"}
+        modalBlur: {display: "none"},
+        dataPoints: []
       }
   
       this.handleChange = this.handleChange.bind(this);
@@ -89,6 +90,27 @@ class AgentsRow extends React.Component {
             }
         }
     }
+
+    componentDidMount(){
+        let self = this;
+        const modal_path = '/api/modal'
+        const modal_options = {
+            method: 'GET'
+        }
+
+        const get_modal_uri = `${modal_path}?idx_agent=${this.props.agent.idx_agent}`
+        fetch(get_modal_uri, modal_options).then(function (response){
+            return response.json();
+        }).then(function (jsonResponse){
+            if (jsonResponse.data.message === 'Query ran'){
+                self.setState({
+                    dataPoints: jsonResponse.data.datapoints
+                })
+            }
+        }).catch(function (error){
+            console.log(error);
+        })
+    }
   
     render() {
         const idx_agent = this.props.agent.idx_agent;
@@ -100,13 +122,9 @@ class AgentsRow extends React.Component {
         //Use Agent ID to retrieve the datapoints for that agent
         const modalStyle = {bLur: this.state.modalBlur, vIew: this.state.modalView};
         //Fetch server for actual data
-        const test_datapoints = [
-            {datapoint_name: "User (Percent CPU Usage)", polling_interval: "5000", ts_created: "2020-07-25 16:26:56", ts_modified: "2020-08-24 17:10:13"},
-            {datapoint_name: "System (Percent CPU Usage)", polling_interval: "10000", ts_created: "2020-07-25 16:26:56", ts_modified: "2020-08-24 17:10:13"},
-            {datapoint_name: "Idle (Percent CPU Usage)", polling_interval: "100", ts_created: "2020-07-25 16:26:56", ts_modified: "2020-08-24 17:10:13"}
-        ]
+        const _datapoints = this.state.dataPoints;
 
-        const datapoints = <Datapoint datapoints={test_datapoints}/>
+        const datapoints = <Datapoint datapoints={_datapoints}/>
         const title = "Datapoints for " + agent_id.substring(0, 10) + "...";
         const modalElements = {
             title: title,

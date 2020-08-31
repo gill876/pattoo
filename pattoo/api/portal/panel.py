@@ -209,6 +209,7 @@ def modal():
             pp_datapoints = []
             for datapoint in datapoints:
                 pp_datapoints+= [{
+                    'idx_agent': idx_agent,
                     'idx_datapoint': datapoint[0].idx_datapoint,
                     'ts_created': datapoint[0].ts_created.__str__(),
                     'enabled': datapoint[0].enabled,

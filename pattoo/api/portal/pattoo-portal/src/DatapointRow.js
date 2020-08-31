@@ -4,7 +4,7 @@ class DatapointRow extends React.Component {
     constructor(props){
         super (props);
         this.state = {
-          enabled: false
+          enabled: this.props.datapoint.enabled
         }
     
         this.handleChange = this.handleChange.bind(this);
@@ -21,15 +21,16 @@ class DatapointRow extends React.Component {
     };
 
     render() {
-        const datapoint_name = this.props.datapoint.datapoint_name;
-        const polling_interval = this.props.datapoint.polling_interval;
+        const datapoint_id = this.props.datapoint.idx_datapoint;
+        const datapoint_name = this.props.datapoint.translation;
+        //Enabled
         const ts_created = this.props.datapoint.ts_created;
-        const ts_modified = this.props.datapoint.ts_modified;
+        const polling_interval = this.props.datapoint.polling_interval;
         return (
             <tbody className="text-gray-700">
                 <tr>
+                    <td className="text-left py-1 px-2">{datapoint_id}</td>
                     <td className="text-left py-1 px-2">{datapoint_name}</td>
-                    <td className="text-left py-1 px-2">{polling_interval}</td>
                     <td className="text-left py-3 px-4">
                         <div className="relative inline-block w-10 mr-2 align-middle select-none">
                             <label className="switch">
@@ -37,6 +38,7 @@ class DatapointRow extends React.Component {
                                     type="checkbox"
                                     name="toggle"
                                     id="toggle"
+                                    data-value={this.props.datapoint.idx_agent}
                                     defaultChecked={this.state.enabled}
                                     onChange={this.handleChange}
                                     >
@@ -46,7 +48,7 @@ class DatapointRow extends React.Component {
                         </div>
                     </td>
                     <td className="text-left py-1 px-2">{ts_created}</td>
-                    <td className="text-left py-1 px-2">{ts_modified}</td>
+                    <td className="text-left py-1 px-2">{polling_interval}</td>
                 </tr>
             </tbody>
         );
