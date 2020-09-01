@@ -191,7 +191,8 @@ class Test_Systemd(unittest.TestCase):
                 'pattoo-config',
                 'pattoo_api_agentd.service',
                 'pattoo_apid.service',
-                'pattoo_ingesterd.service'
+                'pattoo_ingesterd.service',
+                'pattoo_portald.service'
             ])
 
             # Place service files into temp dir
