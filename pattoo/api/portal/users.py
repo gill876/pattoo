@@ -8,6 +8,9 @@ from flask import request, session
 from pattoo.db import db
 from pattoo.db.models import User as UserModel
 
+# Import server resources
+# from .forms import AddUserForm
+
 # Define the AGENTS global variable
 USERS = Blueprint('USERS', __name__)
 
@@ -53,3 +56,29 @@ def user():
             ]
         response = {'data':{'users': pp_users, 'message': 'Query ran'}}
     return response
+
+
+# @PANEL.route('/adduser', methods=['GET', 'POST'])
+# def adduser():
+#    """Add user.
+
+#    Args:
+#        None
+
+#    Returns:
+#        None
+
+#    """
+#    addUserF = AddUserForm()
+
+#    if request.method == 'POST' and addUserF.validate_on_submit():
+#        firstname = request.form['firstname']
+#        lastname = request.form['lastname']
+#        username = request.form['username']
+#        password = request.form['password']
+#        enabled = request.form['enabled']
+
+#        # with db.db_modify(20156, close=False) as db_session:
+
+
+#    return render_template('adduser.html', form=addUserF)

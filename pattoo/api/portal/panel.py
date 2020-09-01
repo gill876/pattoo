@@ -8,7 +8,7 @@ from flask import Blueprint
 from flask import request, abort, session
 from flask import render_template
 
-# pattoo imports
+# Pattoo imports
 from pattoo_shared import log
 from pattoo_shared.configuration import ServerConfig as Config
 from pattoo.db import db
@@ -16,7 +16,6 @@ from pattoo.db.models import User as UserModel
 
 # Import server resources
 from .forms import LoginForm
-# from .forms import AddUserForm
 
 # Define the PANEL global variable
 PANEL = Blueprint('PANEL', __name__)
@@ -79,31 +78,6 @@ def login():
     # New Flask automatically turns returned dictionary into json
     return response
 
-
-# @PANEL.route('/adduser', methods=['GET', 'POST'])
-# def adduser():
-#    """Add user.
-
-#    Args:
-#        None
-
-#    Returns:
-#        None
-
-#    """
-#    addUserF = AddUserForm()
-
-#    if request.method == 'POST' and addUserF.validate_on_submit():
-#        firstname = request.form['firstname']
-#        lastname = request.form['lastname']
-#        username = request.form['username']
-#        password = request.form['password']
-#        enabled = request.form['enabled']
-
-#        # with db.db_modify(20156, close=False) as db_session:
-
-
-#    return render_template('adduser.html', form=addUserF)
 
 @PANEL.route('/', defaults={'path': ''})
 @PANEL.route('/<path:path>')
