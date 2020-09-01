@@ -67,9 +67,13 @@ class Test_Systemd(unittest.TestCase):
         with open(os.path.join(service_directory, files[2]), 'r') as apid:
             pattoo_apid = apid.readlines()
 
+        # Open portald service file for reading
+        with open(os.path.join(service_directory, files[3]), 'r') as portald:
+            pattoo_portald = portald.readlines()
+
         # Put all service file contents into a list
         expected_contents = sorted([
-                pattoo_api_agentd, pattoo_ingesterd, pattoo_apid])
+                pattoo_api_agentd, pattoo_ingesterd, pattoo_apid, pattoo_portald])
 
         # Initialize temporary directory to copy service files
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -78,7 +82,8 @@ class Test_Systemd(unittest.TestCase):
             expected = set([
                 os.path.join(temp_dir, 'pattoo_api_agentd.service'),
                 os.path.join(temp_dir, 'pattoo_apid.service'),
-                os.path.join(temp_dir, 'pattoo_ingesterd.service')
+                os.path.join(temp_dir, 'pattoo_ingesterd.service'),
+                os.path.join(temp_dir, 'pattoo_portald.service')
             ])
 
             copied_service_files = copy_service_files(
@@ -104,8 +109,13 @@ class Test_Systemd(unittest.TestCase):
                     copied_service_files[2]), 'r') as apid:
                 temp_apid = apid.readlines()
 
+            with open(os.path.join(
+                    service_directory,
+                    copied_service_files[3]), 'r') as portald:
+                temp_portald = portald.readlines()
+
             actual_contents = sorted(
-                [temp_api_agentd, temp_ingesterd, temp_apid])
+                [temp_api_agentd, temp_ingesterd, temp_apid, temp_portald])
 
             # Ensure contents are equal
             self.assertEqual(expected_contents, actual_contents)
