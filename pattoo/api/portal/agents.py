@@ -31,7 +31,7 @@ def agents():
 
     if enable is not None and idx_agent is not None:
         change_enable = 1 if (enable == 0) else 0
-        response = {'data': {'idx_agent': idx_agent, 'enable': change_enable, 'message': 'Not changed'}}
+        response = {'data': {'idx_agent': idx_agent, 'enable': enable, 'message': 'Not changed'}}
         with db.db_modify(20188, die=True) as db_session:
             db_session.query(AgentModel).filter(
                 AgentModel.idx_agent == idx_agent
