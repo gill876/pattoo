@@ -1,0 +1,20 @@
+[Unit]
+Description=pattoo_portald daemon
+Wants=network.target
+After=network.target mysql.service mysqld.service mariadb.service mariadb@.service
+
+[Service]
+Environment="PATTOO_CONFIGDIR=x"
+RuntimeDirectoryPreserve=yes
+RuntimeDirectory=PATTOO_SYSTEM_DAEMON_DIRECTORY
+User=pattoo
+Group=pattoo
+ExecStart=INSTALLATION_DIRECTORY/bin/pattoo_portald.py --start
+ExecStop=INSTALLATION_DIRECTORY/bin/pattoo_portald.py --stop
+ExecReload=INSTALLATION_DIRECTORY/bin/pattoo_portald.py --restart
+RemainAfterExit=yes
+GuessMainPID=yes
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
