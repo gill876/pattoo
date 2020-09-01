@@ -320,7 +320,8 @@ def main():
     daemon_list = [
         'pattoo_apid',
         'pattoo_api_agentd',
-        'pattoo_ingesterd'
+        'pattoo_ingesterd',
+        'pattoo_portald'
     ]
     config_files = ['pattoo.yaml', 'pattoo_server.yaml', 'pattoo_agent.yaml']
     template_dir = os.path.join(ROOT_DIR, 'setup/systemd/system')
