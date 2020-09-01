@@ -14,3 +14,7 @@ class AddUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = StringField('Password', validators=[DataRequired()])
     enabled = RadioField('Enable User', choices=[('1','Enable'),('0','Disable')])
+
+class  PurgeForm(FlaskForm):
+    """Form to add days for purge."""
+    days = IntegerField('Days', validators=[DataRequired()])

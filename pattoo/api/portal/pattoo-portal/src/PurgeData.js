@@ -11,6 +11,7 @@ class PurgeData extends React.Component {
         }
 
         this.getOldestDay = this.getOldestDay.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     getOldestDay = () => {
@@ -23,6 +24,12 @@ class PurgeData extends React.Component {
         fetch(purge_path, purge_options).then(function (response){
             return response.json();
         }).then(function (jsonResponse){
+            let pass = jsonResponse.data.message;
+            if (pass === 'Login first') {
+                alert("Please login");
+                self.props.history.push('/login');
+            }
+
             if (jsonResponse.data.message === 'Query ran'){
                 self.setState({
                     oldestDay: jsonResponse.data.oldestDay
@@ -37,6 +44,10 @@ class PurgeData extends React.Component {
         this.getOldestDay()
     }
 
+    handleChange(event){
+        this.getOldestDay()
+    }
+
     render() {
         return (
             <div className="flex flex-col md:grid md:grid-cols-7">
@@ -48,7 +59,7 @@ class PurgeData extends React.Component {
                             <div className="block mb-3 italic font-light">
                                 Oldest Data: {this.state.oldestDay} days
                             </div>
-                            <PurgeForm/>
+                            <PurgeForm reloadDays={this.handleChange}/>
                         </div>
                     </div>
                 </div>

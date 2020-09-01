@@ -22,8 +22,30 @@ class PurgeForm extends React.Component {
     };
 
     handleSubmit(event) {
+        let self = this;
         event.preventDefault()
-        alert("Purging after " + this.state.days + " days");
+        
+        const csrfToken = document.getElementById('csrf-token').getAttribute("content");
+        const purgeForm = document.getElementById('purge-form');
+        const purgeData = new FormData(purgeForm);
+        const purge_path = '/api/purge'
+        const purge_options = {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            credentials: 'same-origin',
+            body: purgeData
+        }
+
+        fetch(purge_path, purge_options).then(function(response){
+            return response.json();
+        }).then(function (jsonResponse){
+            if (jsonResponse.data.message === 'Purged') {
+                alert("Data purged successfully");
+                self.props.reloadDays(event)
+            }
+        }).catch(function (error){
+            console.log(error);
+        });
     }
 
     render() {

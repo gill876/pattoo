@@ -50,7 +50,7 @@ class Agents extends React.Component {
         fetch(agent_path, agent_options).then(function (response){
             return response.json();
         }).then(function (jsonResponse){
-            console.log(jsonResponse);
+            //console.log(jsonResponse);
             let pass = jsonResponse.data.message;
             if (pass === 'Login first') {
                 alert("Please login");

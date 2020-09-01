@@ -13,6 +13,9 @@ import time
 from pattoo.db import db
 from pattoo.db.models import Data as DataModel
 
+# Import server resources
+from .forms import PurgeForm
+
 # Define the AGENTS global variable
 PURGE = Blueprint('PURGE', __name__)
 
@@ -44,6 +47,20 @@ def datapoints():
         oldestDay = (datetime.datetime.fromtimestamp((_difference / 1000))).day
 
         response = {'data':{'oldestDay': oldestDay, 'message': 'Query ran'}}
+    
+    if request.method == 'GET':
         return response
+    
+    if request.method == 'POST':
+        response = {'data':{'message': 'Form not validated'}}
+        # Prepare purge form
+
+        purgeF = PurgeForm()
+
+        days = purgeF.days.data = int(request.form['days'])
+
+        if purgeF.validate_on_submit():
+            print("***{}\n{}***".format(days, oldestDay))
+            response = {'data':{'message': 'Purged'}}
 
     return response
