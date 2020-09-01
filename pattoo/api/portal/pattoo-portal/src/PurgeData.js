@@ -34,6 +34,8 @@ class PurgeData extends React.Component {
                 self.setState({
                     oldestDay: jsonResponse.data.oldestDay
                 })
+            } else {
+                console.log(jsonResponse)
             }
         }).catch(function (error){
             console.log(error);

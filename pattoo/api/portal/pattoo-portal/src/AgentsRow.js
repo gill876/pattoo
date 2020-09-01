@@ -97,6 +97,8 @@ class AgentsRow extends React.Component {
                     self.setState({
                         dataPoints: jsonResponse.data.datapoints
                     })
+                } else {
+                    console.log(jsonResponse)
                 }
             }).catch(function (error){
                 console.log(error);

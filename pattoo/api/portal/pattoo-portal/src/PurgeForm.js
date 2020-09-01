@@ -42,6 +42,8 @@ class PurgeForm extends React.Component {
             if (jsonResponse.data.message === 'Purged') {
                 alert("Data purged successfully");
                 self.props.reloadDays(event)
+            } else {
+                console.log(jsonResponse)
             }
         }).catch(function (error){
             console.log(error);

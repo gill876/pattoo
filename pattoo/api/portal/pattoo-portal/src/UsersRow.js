@@ -37,6 +37,7 @@ class UsersRow extends React.Component {
             self.props.updateRow(event);
           } else {
             event.preventDefault();
+            console.log(jsonResponse);
           }
         }).catch(function (error){
           console.log(error);

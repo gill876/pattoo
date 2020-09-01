@@ -53,14 +53,29 @@ def datapoints():
     
     if request.method == 'POST':
         response = {'data':{'message': 'Form not validated'}}
-        # Prepare purge form
 
+        # Prepare purge form
         purgeF = PurgeForm()
 
-        days = purgeF.days.data = int(request.form['days'])
+        purge_days = purgeF.days.data = int(request.form['days'])
 
         if purgeF.validate_on_submit():
-            print("***{}\n{}***".format(days, oldestDay))
-            response = {'data':{'message': 'Purged'}}
+            response = {'data':{'message': 'Invalid query'}}
+            if purge_days > 0 and purge_days <= oldestDay:
+                _today = datetime.datetime.now()
+                _furthest = _today - datetime.timedelta(days=purge_days)
+
+                # Anything less than the furthest is too old
+                furthest_ts = datetime.datetime.timestamp(_furthest)
+
+                # Condition timestamp to match with DataModel timestamp
+                furthest_ts = int(furthest_ts * 1000)
+
+                response = {'data':{'message': 'Query did not run'}}
+                with db.db_modify(20193, die=True) as db_session:
+                    db_session.query(DataModel).filter(
+                        DataModel.timestamp < furthest_ts
+                    ).delete()
+                    response = {'data':{'message': 'Purged'}}
 
     return response
