@@ -11,12 +11,37 @@ class DatapointRow extends React.Component {
     };
 
     handleChange(event) {
+        let self = this;
         const target = event.target;
-        alert(this.state.enabled);
+
         if (target.name === 'toggle'){
-            this.setState({
-                enabled: !this.state.enabled
-            });
+            const datapoint_path = '/api/datapoints'
+            const datapoint_options = {
+                method: 'GET'
+            }
+
+            const idxDatapoint = self.props.datapoint.idx_datapoint;
+            const idxAgent = self.props.datapoint.idx_agent
+            const eNabled = self.state.enabled
+
+            const enable_uri = `${datapoint_path}?idx_agent=${idxAgent}&idx_datapoint=${idxDatapoint}&enabled=${eNabled}`
+
+            fetch(enable_uri, datapoint_options).then(function (response){
+                return response.json();
+            }).then(function (jsonResponse){
+                if (jsonResponse.data.message === 'Changed'){
+                    self.setState({
+                        enabled: (self.state.enabled === 0)? 1: 0
+                    });
+                    let alrt = (self.state.enabled === 1)? "on": "off";
+                    alert(`Datapoint turned ${alrt}`);
+                    //self.props.updateRow(event);
+                } else {
+                    event.preventDefault();
+                }
+            }).catch(function (error){
+                console.log(error);
+            })
         }
     };
 
@@ -38,7 +63,6 @@ class DatapointRow extends React.Component {
                                     type="checkbox"
                                     name="toggle"
                                     id="toggle"
-                                    data-value={this.props.datapoint.idx_agent}
                                     defaultChecked={this.state.enabled}
                                     onChange={this.handleChange}
                                     >

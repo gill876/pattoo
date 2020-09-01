@@ -24,6 +24,7 @@ class AgentsRow extends React.Component {
         let self = this;
         const target = event.target;
         const agentID = target.dataset.value;
+
         if (target.name === 'toggle'){
             const agent_uri = '/api/agent'
             const agent_options = {
@@ -31,6 +32,7 @@ class AgentsRow extends React.Component {
             }
 
             const enable_uri = `${agent_uri}?enable=${this.state.enabled}&agent=${agentID}`
+
             fetch(enable_uri, agent_options).then(function (response){
                 return response.json();
             }).then(function (jsonResponse){
@@ -73,25 +75,44 @@ class AgentsRow extends React.Component {
                 });
             }
         } else if (targetID === "close-button" || targetID === "close-icon" || targetID === "close-out") {
-            alert("閉める")
+            //alert("閉める")
             if (JSON.stringify(this.state.modalView) === JSON.stringify({})) {
                 this.setState({
                     modalView: {display: "none"},
                     modalBlur: {display: "none"}
                 });
             }
+
+            let self = this;
+            const datapoint_path = '/api/datapoints'
+            const datapoint_options = {
+                method: 'GET'
+            }
+
+            const get_modal_uri = `${datapoint_path}?idx_agent=${this.props.agent.idx_agent}`
+            fetch(get_modal_uri, datapoint_options).then(function (response){
+                return response.json();
+            }).then(function (jsonResponse){
+                if (jsonResponse.data.message === 'Query ran'){
+                    self.setState({
+                        dataPoints: jsonResponse.data.datapoints
+                    })
+                }
+            }).catch(function (error){
+                console.log(error);
+            })
         }
     }
 
     componentDidMount(){
         let self = this;
-        const modal_path = '/api/datapoints'
-        const modal_options = {
+        const datapoint_path = '/api/datapoints'
+        const datapoint_options = {
             method: 'GET'
         }
 
-        const get_modal_uri = `${modal_path}?idx_agent=${this.props.agent.idx_agent}`
-        fetch(get_modal_uri, modal_options).then(function (response){
+        const get_modal_uri = `${datapoint_path}?idx_agent=${this.props.agent.idx_agent}`
+        fetch(get_modal_uri, datapoint_options).then(function (response){
             return response.json();
         }).then(function (jsonResponse){
             if (jsonResponse.data.message === 'Query ran'){

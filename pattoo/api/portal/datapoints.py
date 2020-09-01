@@ -15,14 +15,44 @@ DATAPOINTS = Blueprint('DATAPOINTS', __name__)
 @DATAPOINTS.route('/api/datapoints', methods=['GET'])
 def datapoints():
     """
+    Manage datapoints for an agent.
+
+    Args:
+        None
+    
+    Returns:
+        response (dict): Response Message
+
     """
     if session.get('idx_user', None) is None:
         response = {'data': {'message': 'Login first'}}
         return response
 
-    # enable = request.args.get('enable', type=int)
+    enabled = request.args.get('enabled', type=int)
     idx_agent = request.args.get('idx_agent', type=int)
+    idx_datapoint = request.args.get('idx_datapoint', type=int)
     response = {'data':{'message': 'Query did not run'}}
+
+    if enabled is not None and idx_agent is not None and idx_datapoint is not None:
+        change_enabled = 1 if (enabled == 0) else 0
+        response = {'data': {
+            'idx_agent': idx_agent, 'idx_datapoint': idx_datapoint,
+            'enabled': enabled, 'message': 'Not changed'
+            }
+        }
+        with db.db_modify(20190, die=True) as db_session:
+            db_session.query(DataPModel).filter(
+                DataPModel.idx_agent == idx_agent,
+                DataPModel.idx_datapoint == idx_datapoint
+            ).update({'enabled': change_enabled})
+
+            response = {'data': {
+                'idx_agent': idx_agent, 'idx_datapoint': idx_datapoint,
+                'enabled': change_enabled, 'message': 'Changed'
+                }
+            }
+        return response
+
     if idx_agent is not None:
         with db.db_query(20189, close=False) as db_session:
             datapoints = db_session.query(
