@@ -9,6 +9,8 @@ class PurgeData extends React.Component {
         this.state = {
             oldestDay: 0
         }
+
+        this.getOldestDay = this.getOldestDay.bind(this);
     }
 
     getOldestDay = () => {
@@ -32,7 +34,7 @@ class PurgeData extends React.Component {
     }
 
     componentDidMount(){
-        getOldestDay()
+        this.getOldestDay()
     }
 
     render() {
