@@ -20,6 +20,7 @@ from pattoo.api.portal.status import STATUS
 from pattoo.api.portal.agents import AGENTS
 from pattoo.api.portal.users import USERS
 from pattoo.api.portal.datapoints import DATAPOINTS
+from pattoo.api.portal.purge import PURGE
 
 # Setup flask
 PATTOO_PORTAL = Flask(
@@ -73,6 +74,8 @@ PATTOO_PORTAL.register_blueprint(
     USERS, url_prefix='')
 PATTOO_PORTAL.register_blueprint(
     DATAPOINTS, url_prefix='')
+PATTOO_PORTAL.register_blueprint(
+    PURGE, url_prefix='')
 
 # Function to easily find your assests
 PATTOO_PORTAL.jinja_env.globals['static'] = (
