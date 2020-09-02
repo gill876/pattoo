@@ -172,7 +172,7 @@ class AgentsRow extends React.Component {
                             type="checkbox"
                             name="toggle"
                             id="toggle"
-                            data-value={idx_agent} {/*Retrieve idx_agent when the button is clicked*/}
+                            data-value={idx_agent} /*Retrieve idx_agent when the button is clicked*/
                             defaultChecked={this.state.enabled}
                             onChange={this.handleChange}
                             >
