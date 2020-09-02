@@ -22,7 +22,8 @@ PANEL = Blueprint('PANEL', __name__)
 
 @PANEL.route('/api/login', methods=['POST'])
 def login():
-    """Login API link.
+    """
+    Login API link.
 
     Args:
         None
@@ -76,6 +77,27 @@ def login():
                     session['idx_user'] = user.idx_user
 
     # New Flask automatically turns returned dictionary into json
+    return response
+
+
+@PANEL.route('/api/logout', methods=['GET'])
+def logout():
+    """
+    Logout route.
+
+    Args:
+        None
+
+    Returns:
+        response (dict): Response Message
+
+    """
+    if session.get('idx_user', None) is None:
+        response = {'data': {'message': 'Login first'}}
+        return response
+
+    session.pop('idx_user', None)
+    response = {'data': {'message': 'Logged out'}}
     return response
 
 

@@ -7,7 +7,6 @@ class Navigation extends React.Component {
         super(props);
 
         this.state = {
-            selected: '',
             menu: 'text-sm mt-6 hidden md:block'
         }
 
@@ -71,7 +70,7 @@ class Navigation extends React.Component {
                             </Link>
                         </li>
                         <li className="text-gray-700 font-bold py-1">
-                            <Link className="block px-4 flex justify-start border-r-4 border-white" to="/admin">
+                            <Link className="block px-4 flex justify-start border-r-4 border-white" to="/logout">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="logout w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                                 <span className="pt-1 pl-3">Logout</span>
                             </Link>
