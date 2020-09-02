@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Modal from './Modal';
+import Modal from './Modal'; // Used to display datapoints for agent
 import Datapoint from './Datapoint';
 
 class AgentsRow extends React.Component {
@@ -20,6 +20,7 @@ class AgentsRow extends React.Component {
       this.handleClick = this.handleClick.bind(this);
     };
   
+    /**The state of the Modal component has been lifted to the AgentRow component*/
     handleChange(event) {
         let self = this;
         const target = event.target;
@@ -37,11 +38,14 @@ class AgentsRow extends React.Component {
                 return response.json();
             }).then(function (jsonResponse){
                 if (jsonResponse.data.message === 'Changed'){
+                    // If the data was changed on the server, change in state
                     self.setState({
                       enabled: (self.state.enabled === 0)? 1: 0
                     });
                     let alrt = (self.state.enabled === 1)? "on": "off";
+                    // Alert that the change was successful
                     alert(`Agent turned ${alrt}`);
+                    // Trigger event that would update the state of the Agent table
                     self.props.updateRow(event);
                   } else {
                     event.preventDefault();
@@ -52,7 +56,7 @@ class AgentsRow extends React.Component {
         }
     };
 
-    handleClick(event) {
+    handleClick(event) { /**Currently this feature is not implemented */
         const target = event.target;
         const targetID = target.id;
         if (target.className === 'cursor-pointer') {
@@ -67,7 +71,7 @@ class AgentsRow extends React.Component {
         }
 
         if (targetID === "modal-button") {
-            //alert(target.dataset.value)//Gets data inside td
+            // Display modal
             if (JSON.stringify(this.state.modalView) === JSON.stringify({display: "none"})) {
                 this.setState({
                     modalView: {},
@@ -75,7 +79,7 @@ class AgentsRow extends React.Component {
                 });
             }
         } else if (targetID === "close-button" || targetID === "close-icon" || targetID === "close-out") {
-            //alert("閉める")
+            // Hide modal
             if (JSON.stringify(this.state.modalView) === JSON.stringify({})) {
                 this.setState({
                     modalView: {display: "none"},
@@ -157,7 +161,7 @@ class AgentsRow extends React.Component {
                 id="modal-button"
                 className="text-left py-3 px-4 text-black hover:text-blue-500 cursor-pointer"
                 onClick={this.handleClick}
-                data-value={idx_agent}>
+                data-value={idx_agent}> {/*Retrieve idx_agent when the button is clicked*/}
                 {agent_polled_target}
             </td>
             <td className="text-left py-3 px-4">{agent_program}</td>
@@ -168,7 +172,7 @@ class AgentsRow extends React.Component {
                             type="checkbox"
                             name="toggle"
                             id="toggle"
-                            data-value={idx_agent}
+                            data-value={idx_agent} {/*Retrieve idx_agent when the button is clicked*/}
                             defaultChecked={this.state.enabled}
                             onChange={this.handleChange}
                             >
