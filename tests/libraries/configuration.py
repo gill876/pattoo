@@ -157,6 +157,10 @@ class UnittestConfig():
                 'ingester_interval': 45,
                 'batch_size': 1503
             },
+            'pattoo_api_portal': {
+                'ip_listen_address': '127.0.0.1',
+                'ip_bind_port': 40205
+            },
         }
 
         self._config = {
