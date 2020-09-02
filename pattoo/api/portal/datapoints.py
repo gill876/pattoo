@@ -24,8 +24,10 @@ def datapoints():
         response (dict): Response Message
 
     """
+    # Check if a user was stored in session first
     if session.get('idx_user', None) is None:
         response = {'data': {'message': 'Login first'}}
+        # Block access if no user was found in session
         return response
 
     enabled = request.args.get('enabled', type=int)
@@ -34,6 +36,7 @@ def datapoints():
     response = {'data':{'message': 'Query did not run'}}
 
     if enabled is not None and idx_agent is not None and idx_datapoint is not None:
+        # Toggle enable value from one received from request
         change_enabled = 1 if (enabled == 0) else 0
         response = {'data': {
             'idx_agent': idx_agent, 'idx_datapoint': idx_datapoint,
@@ -46,6 +49,7 @@ def datapoints():
                 DataPModel.idx_datapoint == idx_datapoint
             ).update({'enabled': change_enabled})
 
+            # Prepare successful message
             response = {'data': {
                 'idx_agent': idx_agent, 'idx_datapoint': idx_datapoint,
                 'enabled': change_enabled, 'message': 'Changed'
@@ -55,6 +59,8 @@ def datapoints():
 
     if idx_agent is not None:
         with db.db_query(20189, close=False) as db_session:
+            # Join DataPoint and PairXlate models to get human
+            # readable value of the DataPoint's data_type
             datapoints = db_session.query(
                 DataPModel, PairModel
             ).filter(
@@ -63,6 +69,9 @@ def datapoints():
                 DataPModel.idx_agent == idx_agent
             ).all()
             pp_datapoints = []
+            # datapoint => [DataPoint, PairXlate]
+            # datapoint[0] => DataPoint
+            # datapoint[1] => PairXlate
             for datapoint in datapoints:
                 pp_datapoints+= [{
                     'idx_agent': idx_agent,

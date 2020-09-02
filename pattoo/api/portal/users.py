@@ -25,16 +25,20 @@ def user():
         response (dict): Response Message
 
     """
+    # Check if a user was stored in session first
     if session.get('idx_user', None) is None:
         response = {'data': {'message': 'Login first'}}
+        # Block access if no user was found in session
         return response
 
     enable = request.args.get('enable', type=int)
     user_id = request.args.get('user', type=int)
     if enable is not None and user_id is not None:
+        # Toggle enable value of enable sent from request
         change_enable = 1 if (enable == 0) else 0
         response = {'data': {'user_id': user_id, 'enable': change_enable, 'message': 'Not changed'}}
         with db.db_modify(20185, die=True) as db_session:
+            # Change enable status of user
             db_session.query(UserModel).filter(
                 UserModel.idx_user == user_id
             ).update({'enabled': change_enable})
@@ -46,6 +50,7 @@ def user():
         users = db_session.query(UserModel).order_by(UserModel.idx_user).all()
         pp_users = []
         for user in users:
+            # Get all users available in list from User model
             pp_users+= [
                 {
                     "idx_user": user.idx_user, "first_name": (user.first_name).decode(),

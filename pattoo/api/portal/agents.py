@@ -22,20 +22,24 @@ def agents():
         response (dict): Response Message
 
     """
+    # Check if a user was stored in session first
     if session.get('idx_user', None) is None:
         response = {'data': {'message': 'Login first'}}
+        # Block access if no user was found in session
         return response
 
     enable = request.args.get('enable', type=int)
     idx_agent = request.args.get('agent', type=int)
 
     if enable is not None and idx_agent is not None:
+        # Toggle the enable status from one received from request
         change_enable = 1 if (enable == 0) else 0
         response = {'data': {'idx_agent': idx_agent, 'enable': enable, 'message': 'Not changed'}}
         with db.db_modify(20188, die=True) as db_session:
             db_session.query(AgentModel).filter(
                 AgentModel.idx_agent == idx_agent
             ).update({'enabled': change_enable})
+            # Return successful message
             response = {'data': {'idx_agent': idx_agent, 'enable': change_enable, 'message': 'Changed'}}
         return response
 
@@ -49,6 +53,8 @@ def agents():
 
         pp_agents = []
         for agent in agents:
+            # Get information from agents list of AgentModel objects
+            # Decode varbinary data
             pp_agents+= [{
                 'idx_agent': agent[0], 'agent_id': (agent[1]).decode(),
                 'agent_polled_target': (agent[2]).decode(),
