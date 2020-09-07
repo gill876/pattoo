@@ -10,11 +10,12 @@ Assuming you already have the `pattoo` database set up, these steps will copy
 the contents of the pattoo database to a new `pattoo_unittest` database so that
 it can be used by the local unittests.
 
-::
-    $ mysqldump -u root -p pattoo > pattoo.sql
-    Enter password:
-    $ mysql -u root -p pattoo_unittest < pattoo.sql
-    Enter password:
+    .. code-block:: bash
+
+        $ mysqldump -u root -p pattoo > pattoo.sql
+        Enter password:
+        $ mysql -u root -p pattoo_unittest < pattoo.sql
+        Enter password:
 
 Database Setup
 --------------
