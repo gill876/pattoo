@@ -24,6 +24,11 @@ If you want to access GraphQL programmatically, without using your browser then 
 
 If you are running it on your local machine go to the http://localhost:20202/pattoo/api/v1/web/graphql URL to get your results.
 
+Retrieving GraphQL data with Pattoo-Web
+```````````````````````````````````````
+
+You can use the `get` function in this file to get GraphQL data from the pattoo API server. https://github.com/PalisadoesFoundation/pattoo-web/blob/master/pattoo_web/phttp.py
+
 How The Database Maps to GraphQL Queries
 ========================================
 
@@ -145,7 +150,10 @@ Next we'll discuss the `Query` class  you'll find further down the file. This cl
     class Query(graphene.ObjectType):
         """Define GraphQL queries."""
 
-        pair = InstrumentedQuery(Pair)
+        node = relay.Node.Field()
+
+        # Results as a single entry filtered by 'id' and as a list
+        agent_xlate = graphene.relay.Node.Field(AgentXlate)
         all_agent_xlate = InstrumentedQuery(AgentXlate)
 
 
@@ -173,10 +181,10 @@ The agentProgram value will be used later for getting a translation into a meani
 .. code-block:: text
 
     {
-      agent(token:
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImp0aSI6IjcyMzFmZjk5LTE0NDktNDRhMS04YzE2LTY4OTMzNjgwZTU4YSIsImlhdCI6MTU5OTQyMjk5MywiZXhwIjoxNTk5NDI2NTkzfQ.UP1FSU3hNOI6EiEt2sMJ4V5n2BN3ttICsJFhJXJTowU"){
+      allAgent {
         edges {
           node {
+            id
             idxAgent
             agentPolledTarget
             agentProgram
@@ -191,98 +199,112 @@ The agentProgram value will be used later for getting a translation into a meani
       }
     }
 
-User Authentication via GraphQL
--------------------------------
-
-It's necessarry to limit access to Pattoo resources through the use of limited
-privilege controls. This is achieved through the use of `JSON Web Tokens(JWT)`.
-
-Both an `access token` and `refresh token` is used to authenticate a given User.
-
-To retrieve both an `access token` and `refresh token`:
-
-.. code-block:: text
-
-    mutation{
-      authenticate(Input: {
-        username: "pattoo",
-        password: "password"
-      }){
-          accessToken
-          refreshToken
-          idxUser
-        }
-    }
-
-Sample Result
-^^^^^^^^^^^^^
+All Datapoints Polled by Agent where id = "X"
+`````````````````````````````````````````````
+You’ll notice that this query also gives you the following information that will be required for translations later on:
+#. key-value pair `key` value for translating Datapoint metadata
+#. `agentProgram` for translating the program name into something meaningful
+#. `idxPairXlateGroup` for translating the key values
 
 .. code-block:: text
 
     {
-      "data": {
-        "authenticate": {
-          "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI",
-          "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTU5Nzg1OTI1NCwibmJmIjoxNTk3ODU5MjU0LCJqdGkiOiJjYWM3OWU0Yy1iNjAxLTQwNmQtYTFiNy1kYzgwOTdjNmYzMzUiLCJpZGVudGl0eSI6MywiZXhwIjoxNTk3OTQ1NjU0fQ.kjAWtIeK6n_Y8sDYbUzs4S9RRmTBdiQMNk4rFm8YN1w",
-          "idxUser": "1"
-        }
-      }
-    }
-
-All queries require a `token` input attribute when querying the GraphQL server.
-
-.. code-block:: text
-
-    {
-      user(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
-        edges{
-          nodes{
-            idxUser
-            username
+      agent(id: "QWdlbnQ6Mg==") {
+        datapointAgent {
+          edges {
+            cursor
+            node {
+              id
+              idxDatapoint
+              idxAgent
+              agent {
+                agentProgram
+                agentPolledTarget
+                idxPairXlateGroup
+                pairXlateGroup {
+                  id
+                }
+              }
+              glueDatapoint {
+                edges {
+                  node {
+                    pair {
+                      key
+                      value
+                    }
+                  }
+                }
+              }
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
           }
         }
       }
     }
 
 
-Refreshing Access Token
-```````````````````````
+All Charts in which Datapoints Polled by Agent appear. Where id = “X”
+``````````````````````````````````````````````````````````````````````
+This query will show:
 
-Access tokens usually have a short time of life, for the purposes of security.
-If an access token is comprised it cannot be utilize once expired. The `default`
-expiration period for an access token being about `15 mintues`. The purpose
-of `refresh tokens` are to provide a client with the ability to obtain a new
-access token.
-
-`Note:` **Refresh Tokens cannot be used access resources from the GraphQL server**
-
-To generate a new `access token`, utilizeing a `refresh token`:
-
-.. code-block:: text
-
-    mutation{
-      authRefresh(refreshToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTU5OTY2OTg5NywibmJmIjoxNTk5NjY5ODk3LCJqdGkiOiI0MzRjMDBkZi1hNmQ1LTQwOGUtOWQ1OS00OWYwMDY4OWM4YTYiLCJpZGVudGl0eSI6IkRldi1Eb21pbmljIiwiZXhwIjoxNTk5NzU2Mjk3fQ.9VVKdoUkKwFn8T0aKb5Be7Fgo-nI9S2y4-znLTaCYWE"){
-        accessToken
-      }
-    }
-
-The newly generate access token should then be stored as the new `access token`,
-and the expired `access token` discarded.
-
-
-Sample Result
-^^^^^^^^^^^^^
+#. All Datapoints for an Agent
+#. The charts to which each datapoint belongs
+#. The favorites to which the charts belong
 
 .. code-block:: text
 
     {
-      "data": {
-        "authRefresh": {
-          "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk5NjcwMzM0LCJuYmYiOjE1OTk2NzAzMzQsImp0aSI6Ijk3ZjhiZWFlLWM2OGYtNDAwZi05MDI3LWIwM2JmNmNmMjE3ZiIsImlkZW50aXR5IjoiRGV2LURvbWluaWMiLCJleHAiOjE1OTk2NzEyMzR9.GuZrvfcsjUoNuuadvHcZLeg9ftrCmmLHGLNVJX7rjr4"
+      agent(id: "QWdlbnQ6MQ==") {
+        datapointAgent {
+          edges {
+            cursor
+            node {
+              id
+              idxDatapoint
+              idxAgent
+              chartDatapointDatapoint {
+                edges {
+                  node {
+                    idxChartDatapoint
+                    chart {
+                      id
+                      idxChart
+                      name
+                      checksum
+                      favoriteChart {
+                        edges {
+                          node {
+                            idxFavorite
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
+          }
         }
       }
     }
 
+
+
+DataPoint Table Queries
+------------------------
+
+Here we have some representative queries you can do:
 
 View All DataPoints
 ````````````````````
@@ -292,10 +314,11 @@ To see all DataPoints and their data enter this query on the left hand side of t
 .. code-block:: text
 
     {
-      datapoint(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allDatapoints {
         edges {
           node {
-            idxDatapoint
+            id
+    				idxDatapoint
             checksum
             dataType
             lastTimestamp
@@ -307,15 +330,19 @@ To see all DataPoints and their data enter this query on the left hand side of t
     }
 
 Sample Result
-^^^^^^^^^^^^^
+.............
+
+Here is the result of all DataPoints. Take note of ``(id: "RGF0YVBvaW50OjE=")`` as we'll use it for querying timeseries data.
+
 .. code-block:: json
 
     {
       "data": {
-        "datapoint": {
+        "allDatapoints": {
           "edges": [
             {
               "node": {
+                "id": "RGF0YVBvaW50OjE=",
                 "idxDatapoint": "1",
                 "checksum":  "ea5ee349b38fa7dc195b3689872c8487e7696201407ef27231b19be837fbc6da0847f5227f1813d893100802c70ffb18646e2097a848db0b7ea4ec15caced101",
                 "dataType": 99,
@@ -326,6 +353,7 @@ Sample Result
             },
             {
               "node": {
+                "id": "RGF0YVBvaW50OjI=",
                 "idxDatapoint": "2",
                 "checksum":  "2b15d147330183c49a1672790bf09f54f8e849f9391c82385fd8758204e87940ab1ffef1bb67ac725de7cc0aa6aba9b6baeff34497ee494c38bee7f24eef65df",
                 "dataType": 99,
@@ -351,9 +379,10 @@ To see all Key-Pair-Values enter this query on the left hand side of the viewer.
 .. code-block:: text
 
     {
-      pair(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allPairs {
         edges {
           node {
+            id
             idxPair
             key
             value
@@ -364,7 +393,7 @@ To see all Key-Pair-Values enter this query on the left hand side of the viewer.
 
 
 Sample Result
-^^^^^^^^^^^^^
+.............
 
 Here is the result of all Key-Pair-Values.
 
@@ -372,10 +401,11 @@ Here is the result of all Key-Pair-Values.
 
     {
       "data": {
-        "pair": {
+        "allPairs": {
           "edges": [
             {
               "node": {
+                "id": "UGFpcjox",
                 "idxPair": "1",
                 "key":  "pattoo_agent_hostname",
                 "value":  "palisadoes"
@@ -383,6 +413,7 @@ Here is the result of all Key-Pair-Values.
             },
             {
               "node": {
+                "id": "UGFpcjoy",
                 "idxPair": "2",
                 "key":  "pattoo_agent_id",
                 "value":  "23a224313e4aaa4678a81638025ab02b42cb8a5b7c47b3dd2efced06d1a13d39"
@@ -390,6 +421,7 @@ Here is the result of all Key-Pair-Values.
             },
             {
               "node": {
+                "id": "UGFpcjoz",
                 "idxPair": "3",
                 "key":  "pattoo_agent_polled_device",
                 "value":  "device.example.com"
@@ -397,6 +429,7 @@ Here is the result of all Key-Pair-Values.
             },
             {
               "node": {
+                "id": "UGFpcjo0",
                 "idxPair": "4",
                 "key":  "pattoo_agent_program",
                 "value":  "pattoo_agent_modbustcpd"
@@ -419,9 +452,10 @@ To see all GluePoints enter this query on the left hand side of the viewer. This
 .. code-block:: text
 
     {
-      glue(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allGlues {
         edges {
           node {
+            id
             idxPair
             idxDatapoint
           }
@@ -430,7 +464,7 @@ To see all GluePoints enter this query on the left hand side of the viewer. This
     }
 
 Sample Result
-^^^^^^^^^^^^^
+.............
 
 .. code-block:: json
 
@@ -440,24 +474,28 @@ Sample Result
           "edges": [
             {
               "node": {
+                "id": "R2x1ZTooMSwgMSk=",
                 "idxPair": "1",
                 "idxDatapoint": "1"
               }
             },
             {
               "node": {
+                "id": "R2x1ZTooMSwgMik=",
                 "idxPair": "1",
                 "idxDatapoint": "2"
               }
             },
             {
               "node": {
+                "id": "R2x1ZTooMSwgMyk=",
                 "idxPair": "1",
                 "idxDatapoint": "3"
               }
             },
             {
               "node": {
+                "id": "R2x1ZTooMSwgNCk=",
                 "idxPair": "1",
                 "idxDatapoint": "4"
               }
@@ -471,15 +509,16 @@ Data Table Queries
 ------------------
 Here we have some representative queries you can do:
 
-View All Numeric Timeseries Data for DataPoint idxDatapoint "x"
-```````````````````````````````````````````````````````````````
+View All Numeric Timeseries Data for DataPoint id "x"
+`````````````````````````````````````````````````````
 
-To see all numeric data for a specific datapoint ``1``.
+To see all numeric data for a specific datapoint ``(id: "RGF0YVBvaW50OjE=")``, enter this query on the left hand side of the viewer.
 
 .. code-block:: text
 
     {
-      datapoint(idxDatapoint: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      datapoint(id: "RGF0YVBvaW50OjE=") {
+        id
         idxDatapoint
         checksum
         dataType
@@ -487,6 +526,7 @@ To see all numeric data for a specific datapoint ``1``.
         dataChecksum {
           edges {
             node {
+              id
               timestamp
               value
             }
@@ -497,15 +537,16 @@ To see all numeric data for a specific datapoint ``1``.
 
 
 Sample Result
-^^^^^^^^^^^^^
+.............
 
-Here is all the timeseries data from idxDatapoint ```3```.
+Here is all the timeseries data from ``(id: "RGF0YVBvaW50OjE=")``.
 
 .. code-block:: json
 
     {
       "data": {
         "datapoint": {
+          "id": "RGF0YVBvaW50OjE=",
           "idxDatapoint": "1",
           "checksum":  "ea5ee349b38fa7dc195b3689872c8487e7696201407ef27231b19be837fbc6da0847f5227f1813d893100802c70ffb18646e2097a848db0b7ea4ec15caced101",
           "dataType": 99,
@@ -514,18 +555,21 @@ Here is all the timeseries data from idxDatapoint ```3```.
             "edges": [
               {
                 "node": {
+                  "id": "RGF0YTooMSwgMTU3NTE3MjgzNTAyOCk=",
                   "timestamp": "1575172835028",
                   "value": "738.0000000000"
                 }
               },
               {
                 "node": {
+                  "id": "RGF0YTooMSwgMTU3NTE3Mjg0NTIxOSk=",
                   "timestamp": "1575172845219",
                   "value": "738.0000000000"
                 }
               },
               {
                 "node": {
+                  "id": "RGF0YTooMSwgMTU3NTE3Mjg1NTM2NCk=",
                   "timestamp": "1575172855364",
                   "value": "738.0000000000"
                 }
@@ -544,9 +588,10 @@ This query provides all the configured languages. The `code` returned is the lan
 .. code-block:: text
 
     {
-      language(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allLanguage {
         edges {
           node {
+            id
             idxLanguage
             code
             name
@@ -568,9 +613,10 @@ You can use this query to get the translation for an agentProgram name for a spe
 .. code-block:: text
 
     {
-      agentXlate(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allAgentXlate {
         edges {
           node {
+            id
             idxAgentXlate
             idxLanguage
             agentProgram
@@ -579,6 +625,7 @@ You can use this query to get the translation for an agentProgram name for a spe
             tsCreated
             tsModified
             language {
+              id
               name
               code
               idxLanguage
@@ -595,9 +642,10 @@ In this case we get translations for the `agentProgram` named `pattoo_agent_snmp
 .. code-block:: text
 
     {
-      agentXlate(agentProgram: "pattoo_agent_snmp_ifmibd", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allAgentXlate(agentProgram: "pattoo_agent_snmp_ifmibd") {
         edges {
           node {
+            id
             idxAgentXlate
             idxLanguage
             agentProgram
@@ -607,6 +655,28 @@ In this case we get translations for the `agentProgram` named `pattoo_agent_snmp
             tsModified
           }
         }
+      }
+    }
+
+Single Node from Agent Translation table filtered by an ID
+``````````````````````````````````````````````````````````
+In this case:
+
+#. The ID is a `graphene.relay.node.GlobalID` string.
+#. The translation for the `agentProgram` is in the “translation” field.
+
+.. code-block:: text
+
+    {
+      agentXlate(id: "QWdlbnRYbGF0ZToy") {
+        id
+        idxAgentXlate
+        idxLanguage
+        agentProgram
+        translation
+        enabled
+        tsCreated
+        tsModified
       }
     }
 
@@ -622,9 +692,10 @@ There are some things to note:
 .. code-block:: text
 
     {
-      agentXlate(idxAgentXlate: "4", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allAgentXlate(idxAgentXlate: "4") {
         edges {
           node {
+            id
             idxAgentXlate
             idxLanguage
             agentProgram
@@ -633,6 +704,7 @@ There are some things to note:
             tsCreated
             tsModified
             language {
+              id
               name
             }
           }
@@ -651,9 +723,10 @@ Here's the query you'll need to view all translations:
 .. code-block:: text
 
     {
-      pairXlate(token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allPairXlate {
         edges {
           node {
+            id
             idxLanguage
             idxPairXlate
             idxPairXlateGroup
@@ -671,9 +744,10 @@ In this example, we filter by `idxPairXlateGroup`
 .. code-block:: text
 
     {
-      pairXlate (idxPairXlateGroup: "2", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allPairXlate (idxPairXlateGroup: "2"){
         edges {
           node {
+            id
             idxLanguage
             idxPairXlate
             idxPairXlateGroup
@@ -696,12 +770,14 @@ This is the query string you'll need to see all the favorites in the database.
 .. code-block:: text
 
     {
-      favorite (token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allFavorite {
         edges {
           node {
+            id
             idxFavorite
             order
             user {
+              id
               idxUser
               username
               firstName
@@ -739,9 +815,10 @@ This query will show:
 .. code-block:: text
 
     {
-      user (token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allUser {
         edges {
           node {
+            id
             username
             firstName
             lastName
@@ -751,6 +828,7 @@ This query will show:
                 node {
                   order
                   chart {
+                    id
                     idxChart
                     name
                   }
@@ -773,15 +851,17 @@ This query will show:
 .. code-block:: text
 
     {
-      user(username: "pattoo", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allUser(username: "pattoo") {
         edges {
           node {
+            id
             username
             favoriteUser {
               edges {
                 node {
                   order
                   chart {
+                    id
                     idxChart
                     name
                   }
@@ -794,7 +874,7 @@ This query will show:
     }
 
 
-View all Favorites for a Specific User (by idxUser)
+View all Favorites for a Specific User (by ID)
 ``````````````````````````````````````````````
 
 This query will show:
@@ -806,18 +886,67 @@ This query will show:
 .. code-block:: text
 
     {
-      favorite(idxUser: "4", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk5NDM0Mzc4LCJuYmYiOjE1OTk0MzQzNzgsImp0aSI6ImFjZWVlMWRlLWQ0YTctNDkyYi04N2MxLWQ4NDhkZWU1YjU5MSIsImlkZW50aXR5IjoiRGV2LURvbWluaWMiLCJleHAiOjE1OTk0MzUyNzh9.MGKMSeF8a_XFt6m1vCS40CSuVMMANblqMcZSxSS_nnM") {
-        edges {
-          node {
-            order
-            chart {
-              idxChart
-              name
+      user(id: "VXNlcjox") {
+        id
+        username
+        favoriteUser {
+          edges {
+            node {
+              order
+              chart {
+                id
+                idxChart
+                name
+              }
             }
           }
         }
       }
     }
+
+
+Authenticate Username and Password
+``````````````````````````````````
+
+This is a custom query that requires you enter a username and password. Regular query results are returned when found, a Null result is returned upon failure.
+
+.. code-block:: text
+
+    {
+      authenticate(username: "palisadoes@example.org", password: "123456") {
+        id
+      }
+    }
+
+Result
+......
+
+Results are returned when found.
+
+.. code-block:: text
+
+    {
+      "data": {
+        "authenticate": [
+          {
+            "id": "VXNlcjo3"
+          }
+        ]
+      }
+    }
+
+
+
+A Null result is returned when not found.
+
+.. code-block:: text
+
+    {
+      "data": {
+        "authenticate": null
+      }
+    }
+
 
 Pagination
 ----------
@@ -832,11 +961,12 @@ This query will return all Datapoint values.
 .. code-block:: text
 
     {
-      datapoints (token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI"){
+      allDatapoints {
         edges {
           node {
             idxDatapoint
             idxAgent
+            id
             tsCreated
             tsModified
           }
@@ -852,11 +982,12 @@ It’s important to note the `startCursor` and `endCursor` values when wanting t
 .. code-block:: text
 
     {
-      datapoint(first: x, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allDatapoints(first: x) {
         edges {
           node {
             idxDatapoint
             idxAgent
+            id
             tsCreated
             tsModified
           }
@@ -878,11 +1009,12 @@ It’s important to note the `startCursor` and `endCursor` values when wanting t
 .. code-block:: text
 
     {
-      datapoint(last: x, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allDatapoints(last: x) {
         edges {
           node {
             idxDatapoint
             idxAgent
+            id
             tsCreated
             tsModified
           }
@@ -907,11 +1039,12 @@ Next X Datapoints
 .. code-block:: text
 
     {
-      datapoint(first: X, after: "END_CURSOR_VALUE", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allDatapoints(first: X, after: "END_CURSOR_VALUE") {
         edges {
           node {
             idxDatapoint
             idxAgent
+            id
             tsCreated
             tsModified
           }
@@ -938,11 +1071,12 @@ Previous X Datapoints
 .. code-block:: text
 
     {
-      datapoint(last: X, before: "START_CURSOR_VALUE", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      allDatapoints(last: X, before: "START_CURSOR_VALUE") {
         edges {
           node {
             idxDatapoint
             idxAgent
+            id
             tsCreated
             tsModified
           }
@@ -962,26 +1096,6 @@ Mutation Examples
 
 `Mutation` is the terminology that GraphQL uses for database updates. Here are some query examples using the example database table we have been using. Run these queries in the `/igraphql` url.
 
-All `Mutations` utilize a `Protected Query` type, which forces clients to
-include access tokens withint queries. The `AuthInfoField` only has one
-attribute being a `message` field.
-
-Example ___typename AuthInfoField Result
-........................................
-
-.. code-block:: text
-
-    {
-      "data": {
-        "createChart": {
-          "chart": {
-            "___typename": "AuthInfoField",
-            "message": "Signature Expired"
-          }
-        }
-      }
-    }
-
 Chart Table Mutation
 --------------------
 This section outlines how to mutate chart data.
@@ -990,7 +1104,7 @@ Add a New Chart
 ```````````````
 This mutation will add the chart then return the resulting fields:
 
-#. `idxChart`
+#. `id`
 #. `name`
 #. Enabled status
 
@@ -1000,18 +1114,11 @@ Mutation
 .. code-block:: text
 
     mutation {
-      createChart(Input: {name: "Flying Fish"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      createChart(Input: {name: "Flying Fish"}) {
         chart {
-          ___typename
-          ... on Chart{
-            idxChart
-            name
-            enabled
-          }
-          ___typename
-          ... on AuthInfoField{
-            message
-          }
+          id
+          name
+          enabled
         }
       }
     }
@@ -1025,7 +1132,7 @@ Result
       "data": {
         "createChart": {
           "chart": {
-            "___typename": "Chart",
+            "id": "Q2hhcnQ6MjM5",
             "name": "Flying Fish",
             "enabled": "1"
           }
@@ -1044,20 +1151,16 @@ Mutation
 .. code-block:: text
 
     mutation {
-      updateChart(Input: {idxChart: "239", name: "Teddy Bear"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      updateChart(Input: {idxChart: "239", name: "Teddy Bear"}) {
         chart {
-          ___typename
-          ... on Chart{
-            name
-            enabled
-         }
-         ___typename
-         ... on AuthInfoField{
-            message
-          }
+          id
+          name
+          enabled
         }
       }
     }
+
+
 
 Result
 ......
@@ -1068,7 +1171,7 @@ Result
       "data": {
         "updateChart": {
           "chart": {
-            "___typename": "Chart",
+            "id": "Q2hhcnQ6MjM5",
             "name": "Teddy Bear",
             "enabled": "1"
           }
@@ -1091,18 +1194,12 @@ Mutation
 .. code-block:: text
 
     mutation {
-      createChartDataPoint(Input: {idxDatapoint: "3", idxChart: "239"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      createChartDataPoint(Input: {idxDatapoint: "3", idxChart: "239"}) {
         chartDatapoint {
-          ___typename
-          ... on ChartDataPoint{
-            idxChartDatapoint
-            idxDatapoint
-            idxChart
-         }
-        ___typename
-        ... on AuthInfoField{
-            message
-         }
+          id
+          idxChartDatapoint
+          idxDatapoint
+          idxChart
         }
       }
     }
@@ -1118,7 +1215,7 @@ Result
       "data": {
         "createChartDataPoint": {
           "chartDatapoint": {
-            "___typename": "ChartDataPoint",
+            "id": "Q2hhcnREYXRhUG9pbnQ6MjQy",
             "idxChartDatapoint": "242",
             "idxDatapoint": "3",
             "idxChart": "239"
@@ -1139,23 +1236,18 @@ Mutation
 .. code-block:: text
 
     mutation {
-      updateChartDataPoint(Input: {idxChartDatapoint: "242", enabled: "0"},
-      token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      updateChartDataPoint(Input: {idxChartDatapoint: "242", enabled: "0"}) {
         chartDatapoint {
-          ___typename
-          ... on ChartDataPoint {
-            idxChartDatapoint
-            idxDatapoint
-            idxChart
-            enabled
-          }
-          ___typename
-          ... on AuthInfoField{
-            message
-          }
+          id
+          idxChartDatapoint
+          idxDatapoint
+          idxChart
+          enabled
         }
       }
     }
+
+
 
 Result
 ......
@@ -1166,7 +1258,7 @@ Result
       "data": {
         "updateChartDataPoint": {
           "chartDatapoint": {
-            "___typename": "ChartDataPoint",
+            "id": "Q2hhcnREYXRhUG9pbnQ6MjQy",
             "idxChartDatapoint": "242",
             "idxDatapoint": "3",
             "idxChart": "239",
@@ -1192,20 +1284,14 @@ Mutation
 .. code-block:: text
 
     mutation {
-      createUser(Input: {username: "foo@example.org", firstName: "Foo", lastName: "Fighter", password: "123456"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      createUser(Input: {username: "foo@example.org", firstName: "Foo", lastName: "Fighter", password: "123456"}) {
         user {
-          ___typename
-          ... on User{
-            idxUser
-            firstName
-            lastName
-            username
-            enabled
-          }
-          ___typename
-          ... AuthInfoField{
-            message
-          }
+          id
+          idxUser
+          firstName
+          lastName
+          username
+          enabled
         }
       }
     }
@@ -1219,7 +1305,7 @@ Result
       "data": {
         "createUser": {
           "user": {
-            "___typename": "User",
+            "id": "VXNlcjoz",
             "idxUser": "3",
             "firstName": "Foo",
             "lastName": "Fighter",
@@ -1241,20 +1327,13 @@ Mutation
 .. code-block:: text
 
     mutation {
-      updateUser(Input: {idxUser: "3", firstName: "Street"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      updateUser(Input: {idxUser: "3", firstName: "Street"}) {
         user {
-          ___typename
-          ... on User{
-            idxUser
-            firstName
-            lastName
-            username
-            enabled
-          }
-          ___typename
-          ... on AuthInfoField{
-            message
-          }
+          idxUser
+          firstName
+          lastName
+          username
+          enabled
         }
       }
     }
@@ -1270,7 +1349,6 @@ Result
       "data": {
         "updateUser": {
           "user": {
-            "___typename": "User",
             "idxUser": "3",
             "firstName": "Street",
             "lastName": "Fighter",
@@ -1296,19 +1374,13 @@ Mutation
 .. code-block:: text
 
     mutation {
-      createFavorite(Input: {idxUser: "3", idxChart: "149", order: "2"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      createFavorite(Input: {idxUser: "3", idxChart: "149", order: "2"}) {
         favorite{
-          ___typename
-          ... on Favorite{
-            idxFavorite
-            idxChart
-            idxUser
-            enabled
-          }
-          ___typename
-          ... on AuthInfoField{
-            message
-          }
+          id
+          idxFavorite
+          idxChart
+          idxUser
+          enabled
         }
       }
     }
@@ -1324,7 +1396,7 @@ Result
       "data": {
         "createFavorite": {
           "favorite": {
-            "___typename": "Favorite",
+            "id": "RmF2b3JpdGU6Mg==",
             "idxFavorite": "2",
             "idxChart": "149",
             "idxUser": "3",
@@ -1346,15 +1418,12 @@ Mutation
 .. code-block:: text
 
     mutation {
-      updateFavorite(Input: {idxFavorite: "2", enabled: "0"}, token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNTk3ODU5MjU0LCJuYmYiOjE1OTc4NTkyNTQsImp0aSI6IjM5MTQzNzg1LTgyOWItNDAzZi05NGU4LTAwOTAxYTFmZjFhMiIsImlkZW50aXR5IjozLCJleHAiOjE1OTc4NjAxNTR9.MrPBtBTYj4aeX0ICRIEGyawbIWZTuOc7bYivud8MaSI") {
+      updateFavorite(Input: {idxFavorite: "2", enabled: "0"}) {
         favorite {
-          ___typename
-          ... on Favorite{
-            idxFavorite
-            idxChart
-            idxUser
-            enabled
-          }
+          idxFavorite
+          idxChart
+          idxUser
+          enabled
         }
       }
     }
@@ -1368,7 +1437,6 @@ Result
       "data": {
         "updateFavorite": {
           "favorite": {
-            "___typename": "Favorite",
             "idxFavorite": "2",
             "idxChart": "149",
             "idxUser": "3",
