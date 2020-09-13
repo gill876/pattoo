@@ -58,7 +58,8 @@ Browser URL => http://127.0.7.1:20203/test
 
 All done!
 
-Didn't go as planned? Want to know why? Check out the TL;DR section.
+Didn't go as planned? Want to know why? Check out `The TL;DR section`_.
+
 
 The TL;DR section
 -----------------
