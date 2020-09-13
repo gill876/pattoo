@@ -4,27 +4,31 @@ The Management Portal
 
 1. `Ready, Set, ASAP! (It's quick I promise)`_
 
-2. The TL;DR section
+2. `The TL;DR section`_
 
-    - Build
-    - Preview
-    - Add images
-    - Add Asset folder
-    - Run Flask daemon
-    - The Flask daemon
-    - I npm ejected
-    - TailwindCSS
-    - Custom CSS styles
-    - Apply custom CSS styles
+    - Build_
+    - Preview_
+    - `Add images`_
+    - `Add Asset folder`_
+    - `Run Flask daemon`_
+    - `The Flask daemon`_
+    - `I npm ejected`_
+    - `TailwindCSS`_
+    - `Custom CSS styles`_
+    - `Apply custom CSS styles`_
 
 Ready, Set, ASAP! (It's quick I promise)
 ----------------------------------------
 
-Ready 
+Ready
+^^^^^
+
 Install project dependencies:
 ./pattoo-portal$ npm install
 
 Set
+^^^
+
 Write your components the src folder.
 Remember your Components won't take effect until you build the project:
 
@@ -35,6 +39,8 @@ Remember your Components won't take effect until you build the project:
 If you just want to test out a component, add the route link inside the index.js.
 
 ASAP
+^^^^
+
 Restart the Flask daemon, open web browser, enter IP address and port number of the Flask daemon:
 
 .. code-block:: bash
@@ -53,3 +59,36 @@ Browser URL => http://127.0.7.1:20203/test
 All done!
 
 Didn't go as planned? Want to know why? Check out the TL;DR section.
+
+The TL;DR section
+-----------------
+
+Build
+^^^^^
+
+Preview
+^^^^^^^
+
+Add images
+^^^^^^^^^^
+
+Add Asset folder
+^^^^^^^^^^^^^^^^
+
+Run Flask daemon
+^^^^^^^^^^^^^^^^
+
+The Flask daemon
+^^^^^^^^^^^^^^^^
+
+I npm ejected
+^^^^^^^^^^^^^
+
+TailwindCSS
+^^^^^^^^^^^
+
+Custom CSS styles
+^^^^^^^^^^^^^^^^^
+
+Apply custom CSS styles
+^^^^^^^^^^^^^^^^^^^^^^^
