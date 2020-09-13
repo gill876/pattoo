@@ -17,10 +17,8 @@ The Management Portal
     - Custom CSS styles
     - Apply custom CSS styles
 
-.. _`Ready, Set, ASAP! (It's quick I promise)` :
-
-Ready, Set, ASAP!
------------------
+Ready, Set, ASAP! (It's quick I promise)
+----------------------------------------
 
 Ready 
 Install project dependencies:
