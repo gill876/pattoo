@@ -2,9 +2,11 @@
 The Management Portal
 =====================
 
-1. `Ready, Set, ASAP! (It's quick I promise)`_
+#. Prerequisites_
 
-2. `The TL;DR section`_
+#. `Ready, Set, ASAP! (It's quick I promise)`_
+
+#. `The TL;DR section`_
 
     - Build_
     - Preview_
@@ -17,14 +19,23 @@ The Management Portal
     - `Custom CSS styles`_
     - `Apply custom CSS styles`_
 
+Prerequisites
+-------------
+You must have Pattoo already installed and the database set up.
+Please see installation documentation for more info.
+
 Ready, Set, ASAP! (It's quick I promise)
 ----------------------------------------
 
 Ready
 ^^^^^
+Go in the portal directory in ``pattoo/api/portal/pattoo-portal``.
 
 Install project dependencies:
-./pattoo-portal$ npm install
+
+.. code-block:: bash
+
+    ./pattoo/api/portal/pattoo-portal$ npm install
 
 Set
 ^^^
@@ -46,9 +57,8 @@ Restart the Flask daemon, open web browser, enter IP address and port number of 
 .. code-block:: bash
 
     $ sudo su
-    # systemctl restart ...
+    # systemctl restart pattoo_portald.service
     # exit
-    $ 
 
 Open web browser and enter URI of the portal
 
