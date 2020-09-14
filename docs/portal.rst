@@ -22,7 +22,9 @@ The Management Portal
 Prerequisites
 -------------
 You must have Pattoo already installed and the database set up.
-Please see installation documentation for more info.
+Please see installation_ documentation for more info.
+
+.. _installation: https://github.com/PalisadoesFoundation/pattoo/blob/master/docs/installation.rst#basic-installation
 
 Ready, Set, ASAP! (It's quick I promise)
 ----------------------------------------
