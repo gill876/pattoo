@@ -15,12 +15,12 @@ from pattoo_shared.configuration import BaseConfig
 from pattoo_shared import files
 
 # Import PATTOO_PORTAL Blueprints
-from pattoo.api.portal.panel import PANEL
-from pattoo.api.portal.status import STATUS
-from pattoo.api.portal.agents import AGENTS
-from pattoo.api.portal.users import USERS
-from pattoo.api.portal.datapoints import DATAPOINTS
-from pattoo.api.portal.purge import PURGE
+from pattoo.api.portal.routes.panel import PANEL
+from pattoo.api.portal.routes.status import STATUS
+from pattoo.api.portal.routes.agents import AGENTS
+from pattoo.api.portal.routes.users import USERS
+from pattoo.api.portal.routes.datapoints import DATAPOINTS
+from pattoo.api.portal.routes.purge import PURGE
 
 # Setup flask
 PATTOO_PORTAL = Flask(
