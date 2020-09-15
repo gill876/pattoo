@@ -70,7 +70,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "build-css": "tailwindcss build src/styles.css -o src/index.css"
+    "build-css": "tailwindcss build ../tailwind/styles.css -o src/index.css"
   },
   "eslintConfig": {
     "extends": "react-app"
