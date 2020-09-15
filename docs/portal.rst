@@ -88,13 +88,13 @@ Build
 The optimized production build was configured to be created in the ``live-serve`` folder. Everything in that folder
 will be served by the Flask app.
 
-**To make the optimized production build:**
+To make the optimized production build:
 
 .. code-block:: bash
 
     ./react$ npm run build
 
-**To reconfigure optimized production build path:**
+To reconfigure optimized production build path:
 
     #. Go to the ``config`` directory inside the ``react`` directory
     
@@ -117,7 +117,7 @@ Preview
 Add images
 ^^^^^^^^^^
 
-**To add images to components or HTML:**
+To add images to components or HTML:
 
     #. Add images in the ``./react/public/img`` directory.
 
@@ -172,7 +172,7 @@ TailwindCSS
 Custom CSS styles
 ^^^^^^^^^^^^^^^^^
 
-**To add custom CSS styles:**
+To add custom CSS styles:
 
     #. Go to the ``tailwind`` directory and add styles just like you would with a normal CSS file, inside ``styles.css``.
 
