@@ -95,15 +95,15 @@ will be served by the Flask app.
 
 **To reconfigure optimized production build path:**
 
-    # Go to the ``config`` directory inside the ``react`` directory
+    #. Go to the ``config`` directory inside the ``react`` directory
     
         ``.react/config``
 
-    # Open ``path.js``
+    #. Open ``path.js``
 
         ``.react/config/path.js``
 
-    # Modify optimized production build
+    #. Modify optimized production build
 
         Change path at line in ``path.js`` where:
             ``appBuild: resolveApp('../live-serve/static/react')``
@@ -135,23 +135,23 @@ Custom CSS styles
 
 **To add custom CSS styles:**
 
-    # Go to the ``tailwind`` directory and add styles just like you would with a normal CSS file, inside ``styles.css``.
+    #. Go to the ``tailwind`` directory and add styles just like you would with a normal CSS file, inside ``styles.css``.
 
         ``./tailwind/styles.css``
 
-    # Build the new ``index.css`` from the ``react`` directory.
+    #. Build the new ``index.css`` from the ``react`` directory.
 
         .. code-block:: bash
 
             ./react$ npm run build-css
 
-    # Build the new optimized production build.
+    #. Build the new optimized production build.
 
         .. code-block:: bash
 
             ./react$ npm run build
 
-    # Restart Flask daemon.
+    #. Restart Flask daemon.
 
         .. code-block:: bash
 
@@ -159,7 +159,7 @@ Custom CSS styles
             # systemctl restart pattoo_portald.service
             # exit
     
-    # See your new styles applied when you go on your route link!
+    #. See your new styles applied when you go on your route link!
 
 Apply custom CSS styles
 ^^^^^^^^^^^^^^^^^^^^^^^
