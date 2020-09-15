@@ -8,6 +8,7 @@ The Management Portal
 
 #. `The TL;DR section`_
 
+    - `Creating and testing React components`_
     - Build_
     - Preview_
     - `Add images`_
@@ -18,6 +19,7 @@ The Management Portal
     - `TailwindCSS`_
     - `Custom CSS styles`_
     - `Apply custom CSS styles`_
+    - Troubleshooting_
 
 Prerequisites
 -------------
@@ -76,6 +78,9 @@ Didn't go as planned? Want to know why? Check out `The TL;DR section`_.
 The TL;DR section
 -----------------
 
+Creating and testing React components
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Build
 ^^^^^
 
@@ -90,15 +95,15 @@ will be served by the Flask app.
 
 **To reconfigure optimized production build path:**
 
-    - Go to the ``config`` directory inside the ``react`` directory
+    # Go to the ``config`` directory inside the ``react`` directory
     
         ``.react/config``
 
-    - Open ``path.js``
+    # Open ``path.js``
 
         ``.react/config/path.js``
 
-    - Modify optimized production build
+    # Modify optimized production build
 
         Change path at line in ``path.js`` where:
             ``appBuild: resolveApp('../live-serve/static/react')``
@@ -128,5 +133,36 @@ TailwindCSS
 Custom CSS styles
 ^^^^^^^^^^^^^^^^^
 
+**To add custom CSS styles:**
+
+    # Go to the ``tailwind`` directory and add styles just like you would with a normal CSS file, inside ``styles.css``.
+
+        ``./tailwind/styles.css``
+
+    # Build the new ``index.css`` from the ``react`` directory.
+
+        .. code-block:: bash
+
+            ./react$ npm run build-css
+
+    # Build the new optimized production build.
+
+        .. code-block:: bash
+
+            ./react$ npm run build
+
+    # Restart Flask daemon.
+
+        .. code-block:: bash
+
+            $ sudo su
+            # systemctl restart pattoo_portald.service
+            # exit
+    
+    # See your new styles applied when you go on your route link!
+
 Apply custom CSS styles
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Troubleshooting
+^^^^^^^^^^^^^^^
