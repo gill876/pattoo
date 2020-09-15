@@ -81,6 +81,7 @@ The TL;DR section
 Creating and testing React components
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
 Build
 ^^^^^
 
@@ -106,29 +107,67 @@ will be served by the Flask app.
     #. Modify optimized production build
 
         Change path at line in ``path.js`` where:
-            ``appBuild: resolveApp('../live-serve/static/react')``
+            ``appBuild: resolveApp('..**/live-serve/**static/react')``
 
 
 Preview
 ^^^^^^^
 
+
 Add images
 ^^^^^^^^^^
+
+**To add images to components or HTML:**
+
+    #. Add images in the ``./react/public/img`` directory.
+
+        Example: Adding ``hello.png`` to the directory:
+
+        ``./react/public/img/hello.png``
+
+    #. Prefix image name with ``/static/react/img/`` in HTML image tags.
+
+        Example: Adding ``hello.png`` to the HTML image tag:
+
+        .. code-block:: html
+
+            <!--Hello image-->
+            <img src="/static/react/img/hello.png" alt="Saying hello"/>
+
+    #. Make new optimized production build:
+
+        .. code-block:: bash
+
+            ./react$ npm run build
+
+    #. Restart Flask daemon.
+
+        .. code-block:: bash
+
+            $ sudo su
+            # systemctl restart pattoo_portald.service
+            # exit
+
 
 Add Asset folder
 ^^^^^^^^^^^^^^^^
 
+
 Run Flask daemon
 ^^^^^^^^^^^^^^^^
+
 
 The Flask daemon
 ^^^^^^^^^^^^^^^^
 
+
 I npm ejected
 ^^^^^^^^^^^^^
 
+
 TailwindCSS
 ^^^^^^^^^^^
+
 
 Custom CSS styles
 ^^^^^^^^^^^^^^^^^
@@ -163,6 +202,7 @@ Custom CSS styles
 
 Apply custom CSS styles
 ^^^^^^^^^^^^^^^^^^^^^^^
+
 
 Troubleshooting
 ^^^^^^^^^^^^^^^
