@@ -55,11 +55,11 @@ def agents():
         for agent in agents:
             # Get information from agents list of AgentModel objects
             # Decode varbinary data
-            pp_agents+= [{
+            pp_agents.append({
                 'idx_agent': agent[0], 'agent_id': (agent[1]).decode(),
                 'agent_polled_target': (agent[2]).decode(),
                 'agent_program': (agent[3]).decode(),
                 'enabled': agent[4]
-            }]
+            })
         response = {'data':{'agents': pp_agents, 'message': 'Query ran'}}
     return response

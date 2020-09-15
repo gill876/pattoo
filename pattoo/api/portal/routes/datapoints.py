@@ -73,13 +73,13 @@ def datapoints():
             # datapoint[0] => DataPoint
             # datapoint[1] => PairXlate
             for datapoint in datapoints:
-                pp_datapoints+= [{
+                pp_datapoints.append({
                     'idx_agent': idx_agent,
                     'idx_datapoint': datapoint[0].idx_datapoint,
                     'ts_created': datapoint[0].ts_created.__str__(),
                     'enabled': datapoint[0].enabled,
                     'translation': (datapoint[1].translation).decode(),
                     'polling_interval': datapoint[0].polling_interval
-                }]
+                })
             response = {'data':{'datapoints': pp_datapoints, 'message': 'Query ran'}}
     return response
