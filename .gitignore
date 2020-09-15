@@ -161,15 +161,15 @@ venv.bak/
 .vscode
 
 # dependencies
-pattoo/api/portal/pattoo-portal/node_modules
-pattoo/api/portal/pattoo-portal/.pnp
-pattoo/api/portal/pattoo-portal.pnp.js
+node_modules/
+.pnp
+.pnp.js
 
 # testing
-pattoo/api/portal/pattoo-portal/coverage
+coverage/
 
 # production
-pattoo/api/portal/pattoo-portal/build
+build/
 
 # misc
 .DS_Store
