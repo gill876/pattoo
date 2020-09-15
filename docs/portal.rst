@@ -31,13 +31,13 @@ Ready, Set, ASAP! (It's quick I promise)
 
 Ready
 ^^^^^
-Go in the portal directory in ``pattoo/api/portal/pattoo-portal``.
+Go in the portal directory in ``pattoo/api/portal/react``.
 
 Install project dependencies:
 
 .. code-block:: bash
 
-    ./pattoo/api/portal/pattoo-portal$ npm install
+    ./pattoo/api/portal/react$ npm install
 
 Set
 ^^^
@@ -47,9 +47,9 @@ Remember your Components won't take effect until you build the project:
 
 .. code-block:: bash
 
-    ./pattoo-portal$ npm build
+    ./react$ npm run build
 
-If you just want to test out a component, add the route link inside the index.js.
+If you just want to test out a component or have it available via a route link, add the route link inside the index.js.
 
 ASAP
 ^^^^
@@ -64,9 +64,9 @@ Restart the Flask daemon, open web browser, enter IP address and port number of 
 
 Open web browser and enter URI of the portal
 
-Example: Assuming the configured IP is 127.0.7.1, and the port is 20203, as well as using a test route:
+Example: Assuming the configured IP is ``127.0.7.1``, and the port is ``20203``, as well as using a test route:
 
-Browser URL => http://127.0.7.1:20203/test
+Browser URL => ``http://127.0.7.1:20203/test``
 
 All done!
 
@@ -78,6 +78,31 @@ The TL;DR section
 
 Build
 ^^^^^
+
+The optimized production build was configured to be created in the ``live-serve`` folder. Everything in that folder
+will be served by the Flask app.
+
+**To make the optimized production build:**
+
+.. code-block:: bash
+
+    ./react$ npm run build
+
+**To reconfigure optimized production build path:**
+
+    - Go to the ``config`` directory inside the ``react`` directory
+    
+        ``.react/config``
+
+    - Open ``path.js``
+
+        ``.react/config/path.js``
+
+    - Modify optimized production build
+
+        Change path at line in ``path.js`` where:
+            ``appBuild: resolveApp('../live-serve/static/react')``
+
 
 Preview
 ^^^^^^^
