@@ -21,8 +21,10 @@ General information about the project, including the the prerequisite steps to g
 
    about
    installation
+   installation_modes
    configuration
    systemd
+   docker
    backup
 
 Daemon and Cron Setup
@@ -86,4 +88,5 @@ Developers
    :caption: Developers:
 
    contributing
+   maintainers
    unittest
