@@ -5,14 +5,11 @@ import crypt
 
 # Flask imports
 from flask import Blueprint
-from flask import request, abort, session
+from flask import request, session
 from flask import render_template
 
 # Pattoo imports
-from pattoo_shared import log
-from pattoo_shared.configuration import ServerConfig as Config
-from pattoo.db import db
-from pattoo.db.models import User as UserModel
+from pattoo.db.table.user import User as UserModel
 
 # Import server resources
 from .forms import LoginForm
@@ -47,34 +44,16 @@ def login():
             # Have a response so that if the user doesn't exist,
             # a response would be sent
             response = {'data':{'message': 'Username not found'}}
-            username = (loginF.username.data).encode() # Encode for database query
+            username = loginF.username.data
             password = loginF.password.data
-            with db.db_query(20175, close=False) as db_session:
-                user = db_session.query(UserModel).filter_by(
-                    username=username).first()
 
-                # If the user was found, but the password did not match,
-                # produce error response
-                response = {'data':{'message': 'Password incorrect'}}
+            user = UserModel(username)
+            
+            if user.valid_password(password):
+                response = {'data':{'message': 'Login successful'}}
 
-                # Decode the password from the database to compare with the
-                # form password
-                db_password_decoded = (user.password).decode()
-
-                # Separate the hash type, salt and password
-                db_password_parts = (db_password_decoded).split('$')
-
-                # Hash form password with hash type and salt from the database
-                hashed_form_password = crypt.crypt(
-                    password, "${}${}".format(db_password_parts[1], db_password_parts[2])
-                )
-
-                # Compare hashed password with database hashed password
-                if hashed_form_password == db_password_decoded:
-                    response = {'data':{'message': 'Login successful'}}
-
-                    # Store user ID in session
-                    session['idx_user'] = user.idx_user
+                # Store user ID in session
+                session['idx_user'] = user.idx_user
 
     # New Flask automatically turns returned dictionary into json
     return response

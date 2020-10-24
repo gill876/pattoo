@@ -3,6 +3,7 @@
 # Flask imports
 from flask import Blueprint
 from flask import request, session
+from sqlalchemy import and_
 
 # Pattoo imports
 from pattoo.db import db
@@ -24,6 +25,9 @@ def datapoints():
         response (dict): Response Message
 
     """
+
+    pp_datapoints = [] # Store formatted list
+
     # Check if a user was stored in session first
     if session.get('idx_user', None) is None:
         response = {'data': {'message': 'Login first'}}
@@ -64,11 +68,11 @@ def datapoints():
             datapoints = db_session.query(
                 DataPModel, PairModel
             ).filter(
-                PairModel.idx_pair_xlate == DataPModel.data_type
-            ).filter(
-                DataPModel.idx_agent == idx_agent
+                and_(
+                    PairModel.idx_pair_xlate == DataPModel.data_type,
+                    DataPModel.idx_agent == idx_agent
+                )
             ).all()
-            pp_datapoints = []
             # datapoint => [DataPoint, PairXlate]
             # datapoint[0] => DataPoint
             # datapoint[1] => PairXlate

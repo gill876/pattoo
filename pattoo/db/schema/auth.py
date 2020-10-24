@@ -12,7 +12,7 @@ from pattoo.db.table.user import User as UserTable
 
 
 class AuthMutationInput(graphene.InputObjectType):
-    """Arguments for user authentication"""
+    """Arguments for user authentication."""
 
     username = graphene.String(required=True, description='Username.')
     password = graphene.String(required=True, description='Password.')

@@ -31,6 +31,8 @@ def agents():
     enable = request.args.get('enable', type=int)
     idx_agent = request.args.get('agent', type=int)
 
+    response = {'data':{'message': 'Query did not run'}}
+
     if enable is not None and idx_agent is not None:
         # Toggle the enable status from one received from request
         change_enable = 1 if (enable == 0) else 0
@@ -43,7 +45,6 @@ def agents():
             response = {'data': {'idx_agent': idx_agent, 'enable': change_enable, 'message': 'Changed'}}
         return response
 
-    response = {'data':{'message': 'Query did not run'}}
     with db.db_query(20187, close=False) as db_session:
         agents = db_session.query(
             AgentModel.idx_agent, AgentModel.agent_id,

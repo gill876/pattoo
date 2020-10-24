@@ -224,7 +224,7 @@ class AgentXlate(BASE):
             'agent_xlate_language', uselist=True, cascade='delete,all'))
 
     def __init__(self, idx_language, agent_program, translation, enabled=1):
-        """PairXlate Constructor"""
+        """PairXlate Constructor."""
         self.idx_language = idx_language
         self.agent_program = agent_program
         self.translation = translation
@@ -323,7 +323,7 @@ class PairXlate(BASE):
 
     def __init__(self, idx_pair_xlate_group, idx_language, key, translation,
                  units, enabled=1):
-        """PairXlate Constructor"""
+        """PairXlate Constructor."""
         self.idx_pair_xlate_group = idx_pair_xlate_group
         self.idx_language = idx_language
         self.key = key
