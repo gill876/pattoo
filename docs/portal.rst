@@ -4,22 +4,18 @@ The Management Portal
 
 #. Prerequisites_
 
-#. `Ready, Set, ASAP! (It's quick I promise)`_
+#. `Quick Run`_
 
-#. `The TL;DR section`_
+#. `Addtional Details`_
 
-    - `Creating and testing React components`_
     - Build_
-    - Preview_
-    - `Add images`_
-    - `Add Asset folder`_
-    - `Run Flask daemon`_
-    - `The Flask daemon`_
-    - `I npm ejected`_
+    - `Add images inside Components`_
+    - `Add custom folder for Components`_
+    - `Run Portal background service`_
+    - `Details on Portal background service`_
+    - `The project was npm ejected`_
     - `TailwindCSS`_
     - `Custom CSS styles`_
-    - `Apply custom CSS styles`_
-    - Troubleshooting_
 
 Prerequisites
 -------------
@@ -28,11 +24,14 @@ Please see installation_ documentation for more info.
 
 .. _installation: https://github.com/PalisadoesFoundation/pattoo/blob/master/docs/installation.rst#basic-installation
 
-Ready, Set, ASAP! (It's quick I promise)
-----------------------------------------
+Quick Run
+---------
 
-Ready
-^^^^^
+Install npm dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The npm dependencies are packages required for to modify and build React source codes.
+The command to install the dependencies will require internet connection.
 Go in the portal directory in ``pattoo/api/portal/react``.
 
 Install project dependencies:
@@ -41,10 +40,10 @@ Install project dependencies:
 
     ./pattoo/api/portal/react$ npm install
 
-Set
-^^^
+Building Components
+^^^^^^^^^^^^^^^^^^^
 
-Write your components the src folder.
+Write your Components the ``src`` folder.
 Remember your Components won't take effect until you build the project:
 
 .. code-block:: bash
@@ -53,10 +52,10 @@ Remember your Components won't take effect until you build the project:
 
 If you just want to test out a component or have it available via a route link, add the route link inside the index.js.
 
-ASAP
-^^^^
+Restart Pattoo daemon
+^^^^^^^^^^^^^^^^^^^^^
 
-Restart the Flask daemon, open web browser, enter IP address and port number of the Flask daemon:
+Restart the Flask daemon(program that will run in the background), open web browser, enter IP address and port number of the Flask daemon:
 
 .. code-block:: bash
 
@@ -72,15 +71,11 @@ Browser URL => ``http://127.0.7.1:20203/test``
 
 All done!
 
-Didn't go as planned? Want to know why? Check out `The TL;DR section`_.
+Didn't go as planned? Want to know why? Check out `Addtional Details`_.
 
 
-The TL;DR section
+Addtional Details
 -----------------
-
-Creating and testing React components
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 Build
 ^^^^^
@@ -110,12 +105,8 @@ To reconfigure optimized production build path:
             ``appBuild: resolveApp('..**/live-serve/**static/react')``
 
 
-Preview
-^^^^^^^
-
-
-Add images
-^^^^^^^^^^
+Add images inside Components
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To add images to components or HTML:
 
@@ -149,24 +140,62 @@ To add images to components or HTML:
             # exit
 
 
-Add Asset folder
-^^^^^^^^^^^^^^^^
+Add custom folder for Components
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+One may want to add folders with images or any other files to be accessed by the Components.  
+Add the folder to the ``./react/public`` directory.  
+Inside the HTML tag of the Component, prefix the folder name with ``/static/react/``.  
+For example, the folder you want to add is called ``icons``. Therefore, if you want to link an icon called ``logo.ico`` inside  
+the HTML tag of that folder, it would be:
+
+    .. code-block:: html
+
+            <!--Custom icon-->
+            <img src="/static/react/icons/logo.ico.png" alt="Logo of Pattoo"/>
+
+Please remember Build_ afterwards for the changes to take effect.
 
 
-Run Flask daemon
-^^^^^^^^^^^^^^^^
+Run Portal background service
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Pattoo background service is controlled by ``systemctl``, which means normal ``systemctl`` can be issued  
+in the terminal to start, stop, check the status of, and restart the Pattoo background service.
 
 
-The Flask daemon
-^^^^^^^^^^^^^^^^
+Details on Portal background service
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The Portal background service runs as a Python Flask server controlled by ``systemctl``.  
+Upon installation, the Portal background service was added to ``systemctl``.  
+Ordinary ``systemctl`` commands can be used to controlled the Portal background service.
+One can modify the configuration of the Portal background service/ Portal Flask server by making changes to the  
+configuration file for Pattoo. Please check `configuration instructions`_.
 
-I npm ejected
-^^^^^^^^^^^^^
+.. _`configuration instructions`: https://github.com/PalisadoesFoundation/pattoo/blob/2020-Q4/docs/configuration.rst
 
+The project was npm ejected
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The project was npm ejected in order to add custom build directory. The build files are created in the custom
+build directory and that directory is then served by the Flask server.
+This article_ was used as reference.
+
+Currently, the directory that is used by the Flask server/Pattoo background service is ``./live-serve``.
+
+.. _article: https://blog.learningdollars.com/2019/11/29/how-to-serve-a-reactapp-with-a-flask-server/
 
 TailwindCSS
 ^^^^^^^^^^^
+
+TailwindCSS was used to style the HTML pages. This `video playlist`_ was used as reference.
+
+A custom TailwindCSS command was created in the ``./react/package.json`` file. Currently, it is at line ``73`` and it is:  
+``"build-css": "tailwindcss build ../tailwind/styles.css -o src/index.css"``
+The ``./react/tailwind.config.js`` file is used to add custom TailwindCSS styles.
+
+.. _`video playlist`: https://www.youtube.com/playlist?list=PL4cUxeGkcC9gpXORlEHjc5bgnIi5HEGhw
 
 
 Custom CSS styles
@@ -199,10 +228,3 @@ To add custom CSS styles:
             # exit
     
     #. See your new styles applied when you go on your route link!
-
-Apply custom CSS styles
-^^^^^^^^^^^^^^^^^^^^^^^
-
-
-Troubleshooting
-^^^^^^^^^^^^^^^
