@@ -29,7 +29,7 @@ before_install:
   - mysql -e 'CREATE DATABASE pattoo_unittest;'
 
 install:
-  - setup/install.py install database --verbose
+  - setup/install.py install developer --verbose
 
 # Run the unittest scripts
 script:
