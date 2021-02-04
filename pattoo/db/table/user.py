@@ -290,3 +290,24 @@ def insert_row(row):
 
     with db.db_modify(20054, die=True) as session:
         session.add(row)
+
+def del_user(username):
+    """Delete User table entry.
+
+    Args:
+        username: str
+
+    Returns:
+        result: bool - True if successful
+
+    """
+    result = False
+
+    with db.db_modify(20055, die=True) as session:
+        session.query(_User).filter(
+            _User.username == username.encode()
+        ).delete()
+        
+        result = True
+    
+    return result
