@@ -125,9 +125,11 @@ class TestBasicFunctions(LiveServerTestCase):
         )
         url = "{}/api/login".format(portal_url)
 
-        # Check response
+        # Create session
         s = requests.session()
         response = s.get(url) # sets cookie
+
+        # Retrieve CSRF token
         soup = BeautifulSoup(response.text, 'lxml')
         csrf_token = soup.select_one('meta[id="csrf-token"]')['content']
         
