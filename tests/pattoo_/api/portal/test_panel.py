@@ -139,6 +139,39 @@ class TestBasicFunctions(LiveServerTestCase):
 
         self.assertEqual(expected_success, result)
 
+    def test_logout(self):
+        """Testing method / function logout."""
+        password = self.__class__.password
+
+        # Initialize key variables
+        expected_success = '{\n  "data": {\n    "message": "Logged out"\n  }\n}\n'
+
+        # Create URL
+        config = Config()
+        portal_url = "http://{}:{}".format(
+            config.ip_listen_address(), config.ip_bind_port()
+        )
+        url = "{}/api/login".format(portal_url)
+
+        # Create session
+        s = requests.session()
+        response = s.get(url) # sets cookie
+
+        # Retrieve CSRF token
+        soup = BeautifulSoup(response.text, 'lxml')
+        csrf_token = soup.select_one('meta[id="csrf-token"]')['content']
+        
+        # Login first
+        login_data = dict(username='test_pattoo', password=password)
+        response = s.post(url, data=login_data, headers={'X-CSRFToken': csrf_token})
+
+        # Logout
+        url = "{}/api/logout".format(portal_url)
+        response = s.get(url)
+        result = response.text
+
+        self.assertEqual(expected_success, result)
+
 
 if __name__ == '__main__':
     # Make sure the environment is OK to run unittests
