@@ -183,3 +183,24 @@ def cli_show_dump():
                 agent_program=row.agent_program.decode(),
                 agent_target=row.agent_polled_target.decode()))
     return result
+
+def del_agent(agent_id):
+    """Delete Agent table entry.
+
+    Args:
+        agent_id: str
+
+    Returns:
+        result: bool - True if successful
+
+    """
+    result = False
+
+    with db.db_modify(20043, die=True) as session:
+        session.query(Agent).filter(
+            Agent.agent_id == agent_id.encode()
+        ).delete()
+        
+        result = True
+    
+    return result
