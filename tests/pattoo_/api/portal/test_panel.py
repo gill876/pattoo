@@ -10,7 +10,7 @@ import string
 
 # PIP3 imports
 import requests
-from flask_testing import TestCase, LiveServerTestCase
+from flask_testing import LiveServerTestCase
 from flask_caching import Cache
 from bs4 import BeautifulSoup
 
@@ -39,9 +39,8 @@ from tests.libraries.configuration import UnittestConfig
 from pattoo.api.portal import PATTOO_PORTAL as APP
 from pattoo.db import URL
 from pattoo.db.models import BASE
-from pattoo.db.table import (
-   language, pair_xlate_group, pair_xlate, agent_xlate, user, chart, favorite)
-from pattoo.constants import DbRowUser, DbRowChart, DbRowFavorite
+from pattoo.db.table import user
+from pattoo.constants import DbRowUser
 from pattoo.api.portal.routes.forms import LoginForm
 
 
@@ -114,8 +113,6 @@ class TestBasicFunctions(LiveServerTestCase):
         password = self.__class__.password
 
         # Initialize key variables
-        expected_invalid = {'data':{'message': 'Form not validated'}}
-        expected_nouser = {'data':{'message': 'Username not found'}}
         expected_success = '{\n  "data": {\n    "message": "Login successful"\n  }\n}\n'
 
         # Create URL
