@@ -53,6 +53,7 @@ class TestBasicFunctions(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Prepare database for unit test."""
         if user.exists('test_pattoo') is True:
             # Remove test user from database
             user.del_user('test_pattoo')
@@ -79,6 +80,7 @@ class TestBasicFunctions(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Clear test database entries after unit test."""
         username = 'test_pattoo'
         # Remove test user from database
         user.del_user(username)
