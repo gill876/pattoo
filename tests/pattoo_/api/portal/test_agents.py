@@ -11,7 +11,7 @@ import json
 
 # PIP3 imports
 import requests
-from flask_testing import TestCase, LiveServerTestCase
+from flask_testing import LiveServerTestCase
 from flask_caching import Cache
 from bs4 import BeautifulSoup
 
@@ -38,12 +38,8 @@ from pattoo_shared import data
 from pattoo.configuration import ConfigPortal as Config
 from tests.libraries.configuration import UnittestConfig
 from pattoo.api.portal import PATTOO_PORTAL as APP
-from pattoo.db import URL
-from pattoo.db.models import BASE
-from pattoo.db.table import (
-   language, pair_xlate_group, pair_xlate, agent_xlate, user, chart, favorite, agent)
-from pattoo.constants import DbRowUser, DbRowChart, DbRowFavorite
-from pattoo.api.portal.routes.forms import LoginForm
+from pattoo.db.table import (user, agent)
+from pattoo.constants import DbRowUser
 
 
 class TestBasicFunctions(LiveServerTestCase):
@@ -55,6 +51,7 @@ class TestBasicFunctions(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Prepare database for unit test."""
         if user.exists('test_pattoo') is True:
             # Remove test user from database
             user.del_user('test_pattoo')
@@ -97,6 +94,7 @@ class TestBasicFunctions(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Clear test database entries after unit test."""
         username = 'test_pattoo'
         # Remove test user from database
         user.del_user(username)
@@ -105,6 +103,7 @@ class TestBasicFunctions(LiveServerTestCase):
         agent.del_agent(agent_id)
 
     def setUp(self):
+        """Prepare conditions for each unit test."""
         # Login before performing requests
         password = self.__class__.password
 
@@ -153,8 +152,7 @@ class TestBasicFunctions(LiveServerTestCase):
         return app
 
     def test_agents(self):
-        """Testing method / function login."""
-        password = self.__class__.password
+        """Testing method / function agents."""
 
         # Initialize key variables
         expected_agent_id = \
