@@ -127,6 +127,7 @@ class UnittestConfig():
         self._log_directory = tempfile.mkdtemp()
         self._cache_directory = tempfile.mkdtemp()
         self._daemon_directory = tempfile.mkdtemp()
+        self._system_daemon_directory = tempfile.mkdtemp()
 
         # Make sure the configuration directory is OK
         if os.path.isdir(self._config_directory) is False:
@@ -150,7 +151,7 @@ class UnittestConfig():
                 'ip_listen_address': '127.0.0.1',
                 'ip_bind_port': 40202,
                 'jwt_secret_key': secrets.token_urlsafe(64),
-                'acesss_token_exp': '15_m',
+                'access_token_exp': '15_m',
                 'refresh_token_exp': '1_D'
             },
             'pattoo_ingesterd': {
@@ -168,7 +169,8 @@ class UnittestConfig():
                 'log_directory': self._log_directory,
                 'log_level': 'debug',
                 'cache_directory': self._cache_directory,
-                'daemon_directory': self._daemon_directory
+                'daemon_directory': self._daemon_directory,
+                'system_daemon_directory': self._system_daemon_directory
             },
         }
 
@@ -244,6 +246,7 @@ Insufficient permissions for creating the file:{}'''.format(f_handle))
             self._log_directory,
             self._cache_directory,
             self._daemon_directory,
+            self._system_daemon_directory,
             self._config_directory]
         for directory in directories:
             _delete_files(directory)

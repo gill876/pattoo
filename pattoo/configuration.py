@@ -10,6 +10,7 @@ import stat
 from pattoo_shared.configuration import ServerConfig
 from pattoo_shared.configuration import search
 from pattoo_shared import files
+from pattoo_shared import log
 from pattoo.constants import (
     PATTOO_API_WEB_NAME, PATTOO_API_AGENT_NAME,
     PATTOO_INGESTERD_NAME, PATTOO_API_PORTAL_NAME)
@@ -232,13 +233,18 @@ class ConfigAPId(ServerConfig):
         result = search(key, sub_key, self._server_yaml_configuration)
 
         # Ensures that jwt_secret_key is set
-        if (result is None) or result.strip(' ') == '':
-            raise Exception('Plese set JWT SECRET KEY in config file')
+        if bool(result is False):
+            log_message = 'Parameter {} is not configured'.format(sub_key)
+            log.log2die(20176, log_message)
+        if isinstance(result, str):
+            if bool(result.strip()) is False:
+                log_message = 'Parameter {} is blank'.format(sub_key)
+                log.log2die(20175, log_message)
 
         # Get result
         return result
 
-    def acesss_token_exp(self):
+    def access_token_exp(self):
         """Gets access_token_exp.
 
         Parsing config where:
@@ -248,18 +254,18 @@ class ConfigAPId(ServerConfig):
             None
 
         Return:
-           exp: acesss token expiration time using datetie.timedelta
+           exp: access token expiration time using datetie.timedelta
 
         """
         # Initialize key variables
         key = PATTOO_API_WEB_NAME
-        sub_key = 'acesss_token_exp'
+        sub_key = 'access_token_exp'
 
         # Process configuration
         result = search(key, sub_key, self._server_yaml_configuration)
 
         # Setting timedelta for result
-        # Sets a default value if acesss_token_exp not found
+        # Sets a default value if accesss_token_exp not found
         exp = self.__exp(result)
 
         if exp is None:
@@ -288,7 +294,7 @@ class ConfigAPId(ServerConfig):
         result = search(key, sub_key, self._server_yaml_configuration)
 
         # Setting timedelta for result
-        # Sets a default value if acesss_token_exp not found
+        # Sets a default value if access_token_exp not found
         exp = self.__exp(result)
 
         if exp is None:

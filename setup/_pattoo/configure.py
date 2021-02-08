@@ -26,13 +26,10 @@ def install(pattoo_home):
     shared_config = {
         'pattoo': {
             'language': 'en',
-            'log_directory': (
-                '/var/log/pattoo'),
+            'log_directory': '/var/log/pattoo',
             'log_level': 'debug',
-            'cache_directory': (
-                '/opt/pattoo/cache'),
-            'daemon_directory': (
-                '/opt/pattoo/daemon'),
+            'cache_directory': '/opt/pattoo/cache',
+            'daemon_directory': '/opt/pattoo/daemon',
             'system_daemon_directory': '/var/run/pattoo',
         }
     }
@@ -64,7 +61,7 @@ def install(pattoo_home):
             'ip_listen_address': '0.0.0.0',
             'ip_bind_port': 20202,
             'jwt_secret_key': secrets.token_urlsafe(64),
-            'acesss_token_exp': '15_m',
+            'access_token_exp': '15_m',
             'refresh_token_exp': '1_D'
         },
         'pattoo_ingesterd': {
