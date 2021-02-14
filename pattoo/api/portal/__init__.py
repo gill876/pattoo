@@ -7,6 +7,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask import url_for
 import hashlib
 import uuid
+import stat
+import os
 import datetime
 
 # Import Pattoo resources
@@ -51,9 +53,22 @@ PATTOO_PORTAL.config['PERMANENT_SESSION_LIFETIME'] = \
     datetime.timedelta(minutes=45)
 
 # Location to store cookies (for local session)
+# Create path to Flask-Session cache directory
 config = BaseConfig()
-PATTOO_PORTAL.config['SESSION_FILE_DIR'] = \
-    files.get_session_cache_dir(config)
+
+dir_name = 'session_cache' # session folder name
+
+_dirs = files._Directory(config)
+
+cache_path = _dirs._cache # Get cache path
+session_path = '{}/{}'.format(cache_path, dir_name)
+files.mkdir(session_path) # Create directory if it doesn't exist
+
+# Change filemode to 700
+# Only allow the user to access the flash session folder
+os.chmod(session_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+
+PATTOO_PORTAL.config['SESSION_FILE_DIR'] = session_path
 
 # Initialize Session plugin (for local session)
 sess = Session()
