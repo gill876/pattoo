@@ -75,13 +75,13 @@ def logout():
     """
     # Check if a user was stored in session first
     if session.get('idx_user', None) is None:
-        response = {'data': {'message': 'Login first'}}
+        response = {'data': 'Login first'}, 403
         # Block access if no user was found in session
         return response
 
     # Remove user from session
     session.pop('idx_user', None)
-    response = {'data': {'message': 'Logged out'}}
+    response = {'data': 'Logged out'}, 200
     return response
 
 

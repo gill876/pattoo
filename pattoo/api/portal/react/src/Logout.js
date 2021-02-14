@@ -13,13 +13,13 @@ class Logout extends React.Component {
         }
 
         fetch(logout_path, logout_options).then(function (response){
-            return response.json();
+            return response;
         }).then(function (jsonResponse){
-            let pass = jsonResponse.data.message;
-            if (pass === 'Login first') {
+            let pass = jsonResponse.status;
+            if (pass === 403) {
                 alert("Please login first");
                 self.props.history.push('/login');
-            } else if (jsonResponse.data.message === 'Logged out'){
+            } else if (pass === 200){
                 alert("Logged out");
                 self.props.history.push('/login');
             } else {
