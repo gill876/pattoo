@@ -38,10 +38,13 @@ class Login extends React.Component {
         }
 
         fetch(login_path, login_options).then(function(response){
-            return response.json();
+            return response;
         }).then(function (jsonResponse){
-            if (jsonResponse.data.message === 'Login successful') {
+            if (jsonResponse.status === 200) {
                 self.props.history.push('/admin/agents');
+            } else {
+                alert("Login failed");
+                console.log(jsonResponse.statusText);
             }
         }).catch(function (error){
             console.log(error);

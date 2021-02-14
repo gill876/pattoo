@@ -33,7 +33,7 @@ def login():
     loginF = LoginForm()
 
     if request.method == 'POST':
-        response = {'data':{'message': 'Form not validated'}}
+        response = {'data': 'Form not validated'}, 403
         loginF.username.data = request.form['username']
         loginF.password.data = request.form['password']
 
@@ -43,17 +43,19 @@ def login():
         if loginF.validate_on_submit():
             # Have a response so that if the user doesn't exist,
             # a response would be sent
-            response = {'data':{'message': 'Username not found'}}
+            response = {'data': 'Username not found'}, 404
             username = loginF.username.data
             password = loginF.password.data
 
             user = UserModel(username)
             
             if user.valid_password(password):
-                response = {'data':{'message': 'Login successful'}}
+                response = {'data':'ok'}, 200
 
                 # Store user ID in session
                 session['idx_user'] = user.idx_user
+            else:
+                response = {'data':'failed'}, 406
 
     # New Flask automatically turns returned dictionary into json
     return response
