@@ -8,6 +8,7 @@ PattooShared>=0.0.120
 # Miscellaneous packages
 PyYAML
 Flask-Session
+lxml
 beautifulsoup4
 
 # Database packages
