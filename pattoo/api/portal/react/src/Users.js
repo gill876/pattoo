@@ -54,16 +54,17 @@ class Users extends React.Component {
             if (pass === 'Login first') {
                 alert("Please login");
                 self.props.history.push('/login');
-            }
-            users = jsonResponse.data.users;
-            if (users.length > 0){
-                const user_rows = users.map((user)=>
-                    <UsersRow key={user.idx_user} user={user} updateRow={self.rowChange}/>
-                )
+            } else {
+                users = jsonResponse.data.users;
+                if (users.length > 0){
+                    const user_rows = users.map((user)=>
+                        <UsersRow key={user.idx_user} user={user} updateRow={self.rowChange}/>
+                    )
 
-                self.setState({
-                    display: self.viewTable(user_rows)
-                });
+                    self.setState({
+                        display: self.viewTable(user_rows)
+                    });
+                }
             }
         }).catch(function (error) {
             self.setState({
